@@ -12,35 +12,38 @@ import com.modality.aug.Base;
 class Sector extends Scene
 {
   public var grid:Grid<Space>;
-  public var level:String;
+  public var sectorType:SectorType;
   public var name:String;
   public var game:Game;
   public var gameMenu:GameMenu;
   public var anyExplored:Bool;
 
-  public function new(_level:String, _game:Game)
+  public function new(_st:SectorType, _game:Game)
   {
     super();
-    level = _level;
+    sectorType = _st;
     game = _game;
     anyExplored = false;
     name = Generator.generateSectorName();
-    gameMenu = new GameMenu();
+    gameMenu = new GameMenu(game);
 
     add(gameMenu);
 
     var ent:Base = new Base();
     var text:Text = new Text(name, 20, 10);
-    text.size = 24;
+    text.size = Constants.FONT_SIZE_LG;
     ent.graphic = text;
     add(ent);
 
     grid = new Grid<Space>(20, 50, this);
+    var spaces:Array<Space> = Generator.generateSectorSpaces(sectorType);
     grid.init(function(i:Int, j:Int):Space {
-      var block:Space = new Space(20+(i*Grid.BLOCK_W), 50+(j*Grid.BLOCK_H));
-      block.changeState(Generator.getBaseSquare(_level));
-      add(block);
-      return block;
+      var space:Space = spaces.shift();
+      space.x = 20+(i*Grid.BLOCK_W);
+      space.y = 50+(j*Grid.BLOCK_H);
+      space.updateGraphic();
+      add(space);
+      return space;
     });
   }
 

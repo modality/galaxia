@@ -21,12 +21,12 @@ class SectorMenu extends Scene
     game = _game;
     game.setSectorMenu(this);
 
-    gameMenu = new GameMenu();
+    gameMenu = new GameMenu(game);
     add(gameMenu);
 
     var ent:Base = new Base(20, 10);
     var text:Text = new Text("Explore a sector:");
-    text.size = 24;
+    text.size = Constants.FONT_SIZE_LG;
     ent.graphic = text;
     add(ent);
 

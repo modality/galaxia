@@ -2,7 +2,7 @@ package com.modality.aug;
 
 class AugRandom
 {
-  public static function weightedChoice(weights:Map<String,Int>):String
+  public static function weightedChoice<T>(weights:Map<T,Int>):T
   {
     var totalWeight:Int = 0;
 
@@ -21,5 +21,10 @@ class AugRandom
     }
 
     return null;
+  }
+
+  public static function range(start:Int, end:Int):Int
+  {
+    return Std.random(end-start)+start;
   }
 }

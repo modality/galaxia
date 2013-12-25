@@ -8,13 +8,18 @@ class Space extends Block
   public static var UNEXPLORED_LAYER:Int = 2;
   public static var EXPLORED_LAYER:Int = 1;
 
+  public var spaceType:SpaceType;
   public var explored:Bool = false;
+  public var encounter:Encounter;
+  public var item:Item;
+  public var description:String;
 
   public function new(_x:Int = 0, _y:Int = 0)
   {
     super(_x, _y);
     type = "space";
     layer = UNEXPLORED_LAYER;
+    spaceType = SpaceType.Voidness;
   }
 
   public override function changeState(_state_str:String):Void
@@ -30,18 +35,25 @@ class Space extends Block
       layer = EXPLORED_LAYER;
       updateGraphic();
     }
+
+    if(encounter != null) {
+      trace("ENCOUNTER: "+encounter.description);
+    }
+    if(item != null) {
+      trace("ITEM: There are some "+item.name+" here.");
+    }
   }
 
   public function updateGraphic():Void
   {
     if(type == "space") {
       if(explored) {
-        switch(state_str) {
-          case "void":
+        switch(spaceType) {
+          case Voidness:
             graphic = new Image(Assets.VOID_ICON);
-          case "star":
+          case Star:
             graphic = new Image(Assets.STAR_ICON);
-          case "planet":
+          case Planet:
             graphic = new Image(Assets.PLANET_ICON);
         }
       } else {

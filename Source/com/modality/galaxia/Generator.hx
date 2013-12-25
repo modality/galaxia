@@ -20,6 +20,23 @@ class Generator
   public static var sector_1:Array<String> = ["Alhazen", "Fazari", "Khwarizmi", "Biruni", "Khujandi", "Ptolemy", "Gautama", "Bhaskara", "Madhava", "Aryabhata", "Kepler", "Cassini", "Nebra", "Barnard", "Nabonassar", "Messier", "Verrier", "Chandraskhar", "Sagan", "Hypatia"];
   public static var sector_2:Array<String> = ["Reach", "Verge", "Cluster", "Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Eta", "Theta", "Iota", "Kappa", "Lambda", "Mu", "Nu", "Xi", "Omicron", "Pi", "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega"];
 
+  public static var commonGood:Item;
+  public static var uncommonGood:Item;
+  public static var rareGood:Item;
+
+  public static function initItems():Void
+  {
+    commonGood = new Item(generateItem(), 1);
+
+    do {
+      uncommonGood = new Item(generateItem(), 1);
+    } while(uncommonGood.name == commonGood.name);
+
+    do {
+      rareGood = new Item(generateItem(), 1);
+    } while(rareGood.name == commonGood.name || rareGood.name == uncommonGood.name);
+  }
+
   public static function generateItem():String
   {
     return good_1[Std.random(good_1.length)] + " " + good_2[Std.random(good_2.length)];
@@ -30,21 +47,144 @@ class Generator
     return sector_1[Std.random(sector_1.length)] + " " + sector_2[Std.random(sector_2.length)];
   }
 
-  public static function getBaseSquare(sectorType:String):String
+  public static function getBaseSquare(sectorType:SectorType):SpaceType
   {
     switch(sectorType) {
-      case "deep":
-        return AugRandom.weightedChoice(["star" => 55, "planet" => 45]);
-      case "core":
-        return AugRandom.weightedChoice(["void" => 20, "star" => 40, "planet" => 40]);
-      case "inner":
-        return AugRandom.weightedChoice(["void" => 30, "star" => 35, "planet" => 35]);
-      case "outer":
-        return AugRandom.weightedChoice(["void" => 45, "star" => 30, "planet" => 25]);
-      case "unknown":
-        return AugRandom.weightedChoice(["void" => 65, "star" => 25, "planet" => 10]);
+      case DeepCore:
+        return AugRandom.weightedChoice([
+          SpaceType.Star => 55,
+          SpaceType.Planet => 45
+        ]);
+      case Core:
+        return AugRandom.weightedChoice([
+          SpaceType.Voidness => 20,
+          SpaceType.Star => 40,
+          SpaceType.Planet => 40
+        ]);
+      case InnerRim:
+        return AugRandom.weightedChoice([
+          SpaceType.Voidness => 30,
+          SpaceType.Star => 35,
+          SpaceType.Planet => 35
+        ]);
+      case OuterRim:
+        return AugRandom.weightedChoice([
+          SpaceType.Voidness => 45,
+          SpaceType.Star => 30,
+          SpaceType.Planet => 25
+        ]);
+      case Unknown:
+        return AugRandom.weightedChoice([
+          SpaceType.Voidness => 65,
+          SpaceType.Star => 25,
+          SpaceType.Planet => 10
+        ]);
     }
-    return "void";
+    return SpaceType.Voidness;
   }
 
+  public static function spaceHappening(spaceType:SpaceType, sectorType:SectorType):SpaceHappening
+  {
+    switch(sectorType) {
+      case DeepCore:
+        return SpaceHappening.Nothing;
+      case Core:
+        return AugRandom.weightedChoice([
+          SpaceHappening.Nothing => 5,
+          SpaceHappening.Item => 15,
+          SpaceHappening.Friendly => 40,
+          SpaceHappening.Quest => 40
+        ]);
+      case InnerRim:
+        return AugRandom.weightedChoice([
+          SpaceHappening.Nothing => 5,
+          SpaceHappening.Item => 20,
+          SpaceHappening.Friendly => 25,
+          SpaceHappening.Quest => 25,
+          SpaceHappening.Hostile => 25
+        ]);
+      case OuterRim:
+        return AugRandom.weightedChoice([
+          SpaceHappening.Nothing => 5,
+          SpaceHappening.Item => 25,
+          SpaceHappening.Friendly => 15,
+          SpaceHappening.Quest => 15,
+          SpaceHappening.Hostile => 40
+        ]);
+      case Unknown:
+        return AugRandom.weightedChoice([
+          SpaceHappening.Nothing => 5,
+          SpaceHappening.Item => 35,
+          SpaceHappening.Hostile => 60
+        ]);
+    }
+    return SpaceHappening.Nothing;
+  }
+
+  public static function createSpace(sectorType:SectorType):Space
+  {
+    var space:Space = new Space();
+    space.spaceType = getBaseSquare(sectorType);
+    fillCoreSpace(space, spaceHappening(space.spaceType, sectorType));
+    return space;
+  }
+
+  public static function fillCoreSpace(space:Space, what:SpaceHappening):Void
+  {
+    switch(what) {
+      case Nothing:
+        return;
+      case Item:
+        space.item = new Item(commonGood.name, AugRandom.range(1, 3));
+      case Friendly:
+        var et:EncounterType = AugRandom.weightedChoice([
+          EncounterType.Librarian => 50,
+          EncounterType.Trader => 50
+        ]);
+        switch(et) {
+          case Librarian:
+            space.encounter = new Encounter(et, "You meet a Librarian, poring over ancient texts detailing artifacts");
+          case Trader:
+            space.encounter = new Encounter(et, "You meet a Trader, hawking his wares.");
+          default:
+        }
+      case Hostile:
+        space.encounter = new Encounter(EncounterType.Pirate, "Your ship is beset by pirates!");
+      case Quest:
+        var et:EncounterType = AugRandom.weightedChoice([
+          EncounterType.Astronomer => 40,
+          EncounterType.Terraformer => 30,
+          EncounterType.Scientist => 30
+        ]);
+        switch(et) {
+          case Astronomer:
+            space.encounter = new Encounter(et, "You meet an Astronomer, busily mapping the stars.");
+          case Terraformer:
+            space.encounter = new Encounter(et, "You meet a Terraformer, planning the architecture of a new world.");
+          case Scientist:
+            space.encounter = new Encounter(et, "You meet a Scientist, researching alien compounds.");
+          default:
+        }
+    }
+  }
+
+  public static function generateSectorSpaces(sectorType:SectorType):Array<Space>
+  {
+    var spaces:Array<Space> = new Array<Space>();
+
+    do {
+      for(i in 0...25) {
+        spaces.push(createSpace(sectorType));
+      }
+    } while(!validSector(spaces));
+
+    return spaces;
+  }
+
+
+  public static function validSector(spaces:Array<Space>):Bool
+  {
+    if(spaces.length < 25) return false;
+    return true;
+  }
 }
