@@ -17,9 +17,17 @@ class Generator
   public static var star_common:Array<String> = ["Brown Dwarf", "Red Dwarf", "White Dwarf", "Yellow Star", "Blue Giant", "Red Giant"];
   public static var star_rare:Array<String> = ["Quasar", "Pulsar", "Magnetar", "Planetary Nebula", "Diffuse Nebula", "Exploded Nebula", "Supernova"];
 
+  public static var sector_1:Array<String> = ["Alhazen", "Fazari", "Khwarizmi", "Biruni", "Khujandi", "Ptolemy", "Gautama", "Bhaskara", "Madhava", "Aryabhata", "Kepler", "Cassini", "Nebra", "Barnard", "Nabonassar", "Messier", "Verrier", "Chandraskhar", "Sagan", "Hypatia"];
+  public static var sector_2:Array<String> = ["Reach", "Verge", "Cluster", "Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Eta", "Theta", "Iota", "Kappa", "Lambda", "Mu", "Nu", "Xi", "Omicron", "Pi", "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega"];
+
   public static function generateItem():String
   {
     return good_1[Std.random(good_1.length)] + " " + good_2[Std.random(good_2.length)];
+  }
+
+  public static function generateSectorName():String
+  {
+    return sector_1[Std.random(sector_1.length)] + " " + sector_2[Std.random(sector_2.length)];
   }
 
   public static function getBaseSquare(sectorType:String):String

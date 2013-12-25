@@ -14,6 +14,10 @@ class Game
 
   public function new()
   {
+    trace("testing sketch!");
+    var ss:SectorSketch = new SectorSketch();
+    
+
     unknownSectors = new Array<Sector>();
     outerSectors = new Array<Sector>();
     innerSectors = new Array<Sector>();
