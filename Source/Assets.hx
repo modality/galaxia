@@ -23,14 +23,4 @@ class Assets
     VOID_ICON = "assets/void.png";
   }
 
-  public static function randomSector():String
-  {
-    var image_num:Int = Std.random(16) + 1;
-    if(image_num < 10) {
-      return "assets/sector-0"+image_num+".png";
-    } else {
-      return "assets/sector-"+image_num+".png";
-    }
-  }
-  
 }

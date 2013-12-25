@@ -52,9 +52,9 @@ class Sketch {
     _sprite.graphics.endFill();
   }
 
-  public function color(_r:Int, _g:Int = -1, _b:Int = -1):Int
+  public function color(_r:Int, ?_g:Int, ?_b:Int):Int
   {
-    if(_g != -1 && _b != -1) {
+    if(_g != null && _b != null) {
       return (_r << 16) | (_g << 8) | _b;
     } else {
       return (_r << 16) | (_r << 8) | _r;
@@ -88,12 +88,38 @@ class Sketch {
     _fillColor = _color;
   }
 
+  public function image(_img:BitmapData, _a:Float, _b:Float, ?_c:Float, ?_d:Float)
+  {
+    var _w:Float, _h:Float;
+    var _mat:Matrix = new Matrix();
+
+    if(_c != null && _d != null) {
+      _w = _c;
+      _h = _d;
+      _mat.scale(_c/_img.width, _d/_img.height);
+    } else {
+      _w = _img.width;
+      _h = _img.height;
+      _mat.identity();
+    }
+
+    _sprite.graphics.lineStyle();
+    _sprite.graphics.beginBitmapFill(_img, _mat, false, _smoothing);
+    _sprite.graphics.drawRect(_a, _b, _w, _h);
+    _sprite.graphics.endFill();
+  }
+
   public function line(_x1:Float, _y1:Float, _x2:Float, _y2:Float)
   {
     _startShape();
     _sprite.graphics.moveTo(_x1, _y1);
     _sprite.graphics.lineTo(_x2, _y2);
     _endShape();
+  }
+
+  public function loadImage(_img:String):BitmapData
+  {
+    return openfl.Assets.getBitmapData(_img);
   }
 
   public function noFill():Void
@@ -153,7 +179,11 @@ class Sketch {
   private function _startShape():Void
   {
     if(_fill) _sprite.graphics.beginFill(_fillColor);
-    if(_stroke) _sprite.graphics.lineStyle(_strokeWeight, _strokeColor);
+    if(_stroke) {
+      _sprite.graphics.lineStyle(_strokeWeight, _strokeColor);
+    } else {
+      _sprite.graphics.lineStyle();
+    }
   }
 
   private function _endShape():Void
