@@ -11,6 +11,13 @@ class Assets
   public static var UNEXPLORED_ICON;
   public static var VOID_ICON;
 
+  public static var TERRAFORMER_ICON;
+  public static var SCIENTIST_ICON;
+  public static var ASTRONOMER_ICON;
+  public static var LIBRARIAN_ICON;
+  public static var TRADER_ICON;
+  public static var PIRATE_ICON;
+
   public static function init()
   {
     SECTOR_SELECT = "assets/sector_select.png";
@@ -21,6 +28,12 @@ class Assets
     PLANET_ICON = "assets/planet.png";
     UNEXPLORED_ICON = "assets/unexplored.png";
     VOID_ICON = "assets/void.png";
+    TERRAFORMER_ICON = "assets/terraformer.png";
+    SCIENTIST_ICON = "assets/scientist.png";
+    ASTRONOMER_ICON = "assets/astronomer.png";
+    LIBRARIAN_ICON = "assets/librarian.png";
+    TRADER_ICON = "assets/trader.png";
+    PIRATE_ICON = "assets/pirate.png";
   }
 
 }

@@ -11,17 +11,15 @@ import com.modality.aug.Grid;
 
 class SectorMenu extends Scene
 {
-  public var game:Game;
   public var gameMenu:GameMenu;
   public var grid:Grid<Space>;
 
-  public function new(_game:Game)
+  public function new()
   {
     super();
-    game = _game;
-    game.setSectorMenu(this);
+    Game.instance.setSectorMenu(this);
 
-    gameMenu = new GameMenu(game);
+    gameMenu = new GameMenu();
     add(gameMenu);
 
     var ent:Base = new Base(20, 10);
@@ -47,28 +45,6 @@ class SectorMenu extends Scene
       add(block);
       return block;
     });
-    /*
-    createSectorIcon(195, 136, "unknown_1");
-    createSectorIcon(307, 174, "unknown_2");
-    createSectorIcon(402, 240, "unknown_3");
-    createSectorIcon(470, 332, "unknown_4");
-    createSectorIcon(505, 443, "unknown_5");
-    createSectorIcon(314, 187, "outer_1");
-    createSectorIcon(411, 217, "outer_2");
-    createSectorIcon(493, 278, "outer_3");
-    createSectorIcon(549, 356, "outer_4");
-    createSectorIcon(581, 453, "outer_5");
-    createSectorIcon(304, 254, "inner_1");
-    createSectorIcon(381, 279, "inner_2");
-    createSectorIcon(444, 323, "inner_3");
-    createSectorIcon(492, 388, "inner_4");
-    createSectorIcon(514, 463, "inner_5");
-    createSectorIcon(290, 340, "core_1");
-    createSectorIcon(341, 353, "core_2");
-    createSectorIcon(385, 383, "core_3");
-    createSectorIcon(414, 422, "core_4");
-    createSectorIcon(431, 478, "core_5");
-    */
   }
 
   public override function update():Void
@@ -80,18 +56,8 @@ class SectorMenu extends Scene
 
       if(ent != null && ent.name.split("_")[0] != "deep") {
         ent.explore();
-        game.goToSector(ent.name);
+        Game.instance.goToSector(ent.name);
       }
     }
-  }
-
-  public function createSectorIcon(icon_x:Int, icon_y:Int, name:String):Void
-  {
-    var ent:Base = new Base(icon_x, icon_y);
-    ent.graphic = new Image(Assets.SECTOR_ICON);
-    ent.type = "sector";
-    ent.name = name;
-    ent.setHitboxTo(ent.graphic);
-    add(ent);
   }
 }

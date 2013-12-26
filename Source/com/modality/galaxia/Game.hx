@@ -4,6 +4,8 @@ import com.haxepunk.HXP;
 
 class Game
 {
+  public static var instance:Game;
+
   public var sm:SectorMenu;
   public var unknownSectors:Array<Sector>;
   public var outerSectors:Array<Sector>;
@@ -15,6 +17,7 @@ class Game
 
   public function new()
   {
+    Game.instance = this;
     Generator.initItems();
 
     unknownSectors = new Array<Sector>();
@@ -26,15 +29,11 @@ class Game
     inventory = new Array<Item>();
 
     for(i in 0...5) {
-      unknownSectors.push(new Sector(SectorType.Unknown, this));
-      outerSectors.push(new Sector(SectorType.OuterRim, this));
-      innerSectors.push(new Sector(SectorType.InnerRim, this));
-      coreSectors.push(new Sector(SectorType.Core, this));
+      unknownSectors.push(new Sector(SectorType.Unknown));
+      outerSectors.push(new Sector(SectorType.OuterRim));
+      innerSectors.push(new Sector(SectorType.InnerRim));
+      coreSectors.push(new Sector(SectorType.Core));
     }
-
-    addItem(Generator.generateItem(), 37);
-    addItem(Generator.generateItem(), 12);
-    addItem(Generator.generateItem(), 4);
   }
 
   public function setSectorMenu(_sm:SectorMenu):Void
@@ -64,16 +63,27 @@ class Game
     }
   }
 
-  public function addItem(name:String, amount:Int):Void
+  public function addItem(_item:Item):Void
   {
+    var menu:Array<GameMenu> = new Array<GameMenu>();
+    HXP.scene.getType("game_menu", menu);
+
     for(item in inventory) {
-      if(item.name == name) {
-        item.amount += amount;
-        item.updateGraphic();
+      if(item.name == _item.name) {
+        item.amount += _item.amount;
+        menu[0].updateGraphic();
         return;
       }
     }
-    inventory.push(new Item(name, amount));
+
+    var item:Item = new Item(_item.name, _item.amount);
+    inventory.push(item);
+    menu[0].addItem(item);
+  }
+
+  public function pulse():Void
+  {
+
   }
 
 }

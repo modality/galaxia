@@ -5,8 +5,8 @@ import com.modality.aug.Block;
 
 class Space extends Block
 {
-  public static var UNEXPLORED_LAYER:Int = 2;
-  public static var EXPLORED_LAYER:Int = 1;
+  public static var UNEXPLORED_LAYER:Int = 3;
+  public static var EXPLORED_LAYER:Int = 2;
 
   public var spaceType:SpaceType;
   public var explored:Bool = false;
@@ -22,6 +22,15 @@ class Space extends Block
     spaceType = SpaceType.Voidness;
   }
 
+  public override function added():Void
+  {
+    if(encounter != null) {
+      encounter.x = this.x + 10;
+      encounter.y = this.y + 10;
+      scene.add(encounter);
+    }
+  }
+
   public override function changeState(_state_str:String):Void
   {
     super.changeState(_state_str);
@@ -34,11 +43,16 @@ class Space extends Block
       explored = true;
       layer = EXPLORED_LAYER;
       updateGraphic();
+      if(encounter != null) {
+        encounter.updateGraphic();
+      }
+      if(item != null) {
+        Game.instance.addItem(item);
+        item = null;
+      }
+      Game.instance.pulse();
     }
 
-    if(encounter != null) {
-      trace("ENCOUNTER: "+encounter.description);
-    }
     if(item != null) {
       trace("ITEM: There are some "+item.name+" here.");
     }

@@ -20,7 +20,7 @@ class Main extends Engine
 #if debug
 		//HXP.console.enable();
 #end
-    HXP.scene = new SectorMenu(game);
+    HXP.scene = new SectorMenu();
 	}
 
 	public static function main()

@@ -14,18 +14,16 @@ class Sector extends Scene
   public var grid:Grid<Space>;
   public var sectorType:SectorType;
   public var name:String;
-  public var game:Game;
   public var gameMenu:GameMenu;
   public var anyExplored:Bool;
 
-  public function new(_st:SectorType, _game:Game)
+  public function new(_st:SectorType)
   {
     super();
     sectorType = _st;
-    game = _game;
     anyExplored = false;
     name = Generator.generateSectorName();
-    gameMenu = new GameMenu(game);
+    gameMenu = new GameMenu();
 
     add(gameMenu);
 
@@ -55,9 +53,10 @@ class Sector extends Scene
       if(ent != null && canExplore(ent)) {
         ent.explore();
         anyExplored = true;
+        Game.instance.pulse();
       }
     } else if (Input.pressed(Key.ESCAPE)) {
-      game.goToMenu();
+      Game.instance.goToMenu();
     }
   }
 

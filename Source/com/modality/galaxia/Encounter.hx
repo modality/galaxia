@@ -1,7 +1,6 @@
 package com.modality.galaxia;
 
-//using EncounterType;
-
+import com.haxepunk.graphics.Image;
 import com.modality.aug.Base;
 
 class Encounter extends Base
@@ -11,7 +10,26 @@ class Encounter extends Base
 
   public function new(_et:EncounterType, _desc:String) {
     super();
+    layer = 1;
     encounterType = _et;
     description = _desc;
+  }
+
+  public function updateGraphic():Void
+  {
+    switch(encounterType) {
+      case Librarian:
+        this.graphic = new Image(Assets.LIBRARIAN_ICON);
+      case Astronomer:
+        this.graphic = new Image(Assets.ASTRONOMER_ICON);
+      case Terraformer:
+        this.graphic = new Image(Assets.TERRAFORMER_ICON);
+      case Scientist:
+        this.graphic = new Image(Assets.SCIENTIST_ICON);
+      case Trader:
+        this.graphic = new Image(Assets.TRADER_ICON);
+      case Pirate:
+        this.graphic = new Image(Assets.PIRATE_ICON);
+    }
   }
 }
