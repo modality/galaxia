@@ -18,7 +18,7 @@ class Game
   public function new()
   {
     Game.instance = this;
-    Generator.initItems();
+    Generator.init();
 
     unknownSectors = new Array<Sector>();
     outerSectors = new Array<Sector>();
@@ -68,17 +68,22 @@ class Game
     var menu:Array<GameMenu> = new Array<GameMenu>();
     HXP.scene.getType("game_menu", menu);
 
-    for(item in inventory) {
-      if(item.name == _item.name) {
-        item.amount += _item.amount;
-        menu[0].updateGraphic();
-        return;
+    if(_item.name == "Fuel") {
+      fuel += _item.amount;
+    } else {
+      for(item in inventory) {
+        if(item.name == _item.name) {
+          item.amount += _item.amount;
+          menu[0].updateGraphic();
+          return;
+        }
       }
+
+      var item:Item = new Item(_item.name, _item.amount);
+      inventory.push(item);
+      menu[0].addItem(item);
     }
 
-    var item:Item = new Item(_item.name, _item.amount);
-    inventory.push(item);
-    menu[0].addItem(item);
   }
 
   public function pulse():Void
