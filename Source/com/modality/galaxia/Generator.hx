@@ -69,4 +69,21 @@ class Generator
     return SectorGenerator.createSectorSpaces(sectorType);
   }
 
+  public static function generateEncounter(_et:EncounterType):Encounter
+  {
+    switch(_et) {
+      case Librarian:
+        return new Encounter(_et, "Librarian", "You meet a Librarian, poring over ancient texts detailing artifacts");
+      case Trader:
+        return new Encounter(_et, "Trader", "You meet a Trader, hawking his wares.");
+      case Astronomer:
+        return new Encounter(_et, "Astronomer", "You meet an Astronomer, busily mapping the stars.");
+      case Terraformer:
+        return new Encounter(_et, "Terraformer", "You meet a Terraformer, planning the architecture of a new world.");
+      case Scientist:
+        return new Encounter(_et, "Scientist", "You meet a Scientist, researching alien compounds.");
+      default:
+        return null;
+    }
+  }
 }

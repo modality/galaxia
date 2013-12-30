@@ -29,36 +29,29 @@ class CoreSectorGenerator extends SectorGenerator
       case Nothing:
         return;
       case Item:
-        space.item = new Item(Generator.commonGood.name, AugRandom.range(1, 3));
+        var good:String = AugRandom.weightedChoice([
+          Generator.commonGood.name => 50,
+          Generator.uncommonGood.name => 50,
+        ]);
+        
+        if(good == Generator.commonGood.name) {
+          space.item = new Item(good, AugRandom.range(2, 5));
+        } else {
+          space.item = new Item(good, AugRandom.range(1, 3));
+        }
       case Friendly:
-        var et:EncounterType = AugRandom.weightedChoice([
+        Generator.generateEncounter(AugRandom.weightedChoice([
           EncounterType.Librarian => 50,
           EncounterType.Trader => 50
-        ]);
-        switch(et) {
-          case Librarian:
-            space.encounter = new Encounter(et, "You meet a Librarian, poring over ancient texts detailing artifacts");
-          case Trader:
-            space.encounter = new Encounter(et, "You meet a Trader, hawking his wares.");
-          default:
-        }
+        ]));
       case Hostile:
-        space.encounter = new Encounter(EncounterType.Pirate, "Your ship is beset by pirates!");
+        space.encounter = new Encounter(EncounterType.Pirate, "Pirate", "Your ship is beset by pirates!");
       case Quest:
-        var et:EncounterType = AugRandom.weightedChoice([
+        Generator.generateEncounter(AugRandom.weightedChoice([
           EncounterType.Astronomer => 40,
           EncounterType.Terraformer => 30,
           EncounterType.Scientist => 30
-        ]);
-        switch(et) {
-          case Astronomer:
-            space.encounter = new Encounter(et, "You meet an Astronomer, busily mapping the stars.");
-          case Terraformer:
-            space.encounter = new Encounter(et, "You meet a Terraformer, planning the architecture of a new world.");
-          case Scientist:
-            space.encounter = new Encounter(et, "You meet a Scientist, researching alien compounds.");
-          default:
-        }
+        ]));
     }
   }
 }

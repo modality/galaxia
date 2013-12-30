@@ -45,16 +45,16 @@ class Space extends Block
       updateGraphic();
       if(encounter != null) {
         encounter.updateGraphic();
+        Game.instance.addEncounter(encounter);
+        if(encounter.encounterType == EncounterType.Pirate) {
+          cast(encounter, Pirate).turnUncovered = Game.instance.turnNumber;
+        }
       }
       if(item != null) {
         Game.instance.addItem(item);
         item = null;
       }
       Game.instance.pulse();
-    }
-
-    if(item != null) {
-      trace("ITEM: There are some "+item.name+" here.");
     }
   }
 

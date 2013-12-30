@@ -5,6 +5,8 @@
 	<app main="Main" path="Export" file="Galaxia" />
 	
 	<window fps="30" background="0x000000" />
+	<window width="1024" height="768" resizable="true" />
+
 	<source path="Source" />
 	
 	<haxelib name="openfl" />

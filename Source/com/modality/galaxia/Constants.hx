@@ -11,4 +11,7 @@ class Constants
   public static var GRID_H:Int = 5;
   public static var BLOCK_W:Int = 100;
   public static var BLOCK_H:Int = 100;
+
+  public static var STARTING_HEALTH:Int = 1;
+  public static var STARTING_SHIELDS: Int = 3;
 }

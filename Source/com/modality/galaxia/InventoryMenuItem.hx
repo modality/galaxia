@@ -3,7 +3,7 @@ package com.modality.galaxia;
 import com.haxepunk.graphics.Text;
 import com.modality.aug.Base;
 
-class GameMenuItem extends Base
+class InventoryMenuItem extends Base
 {
   public var item:Item;
   public var text:Text;

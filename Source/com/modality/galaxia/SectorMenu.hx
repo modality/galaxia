@@ -49,8 +49,6 @@ class SectorMenu extends Scene
 
   public override function update():Void
   {
-    super.update();
-
     if(Input.mouseReleased) {
       var ent:Space = cast(collidePoint("sector", Input.mouseX, Input.mouseY), Space);
 

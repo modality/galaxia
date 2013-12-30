@@ -53,10 +53,20 @@ class Sector extends Scene
       if(ent != null && canExplore(ent)) {
         ent.explore();
         anyExplored = true;
-        Game.instance.pulse();
+      }
+
+      var pmi:PirateMenuItem = cast(collidePoint("pirate_menu_item", Input.mouseX, Input.mouseY), PirateMenuItem);
+      if(pmi != null) {
+        Game.instance.attackPirate(pmi);
       }
     } else if (Input.pressed(Key.ESCAPE)) {
       Game.instance.goToMenu();
+    } else if (Input.pressed(Key.S)) {
+      grid.eachBlock(function(space:Space, i:Int, j:Int):Void {
+        if(space.encounter != null && space.encounter.encounterType == EncounterType.Pirate) {
+          cast(space.encounter, Pirate).explode();
+        }
+      });
     }
   }
 

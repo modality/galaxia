@@ -6,11 +6,19 @@ class Game
 {
   public static var instance:Game;
 
+  public var turnNumber:Int;
   public var sm:SectorMenu;
   public var unknownSectors:Array<Sector>;
   public var outerSectors:Array<Sector>;
   public var innerSectors:Array<Sector>;
   public var coreSectors:Array<Sector>;
+
+  public var attack:Int;
+  public var shields:Int;
+  public var health:Int;
+
+  public var maxShields:Int;
+  public var maxHealth:Int;
 
   public var fuel:Int;
   public var inventory:Array<Item>;
@@ -19,6 +27,13 @@ class Game
   {
     Game.instance = this;
     Generator.init();
+
+    turnNumber = 0;
+    maxShields = Constants.STARTING_SHIELDS;
+    maxHealth = Constants.STARTING_HEALTH;
+    shields = maxShields;
+    health = maxHealth;
+    attack = 1;
 
     unknownSectors = new Array<Sector>();
     outerSectors = new Array<Sector>();
@@ -43,7 +58,10 @@ class Game
 
   public function goToMenu():Void
   {
+    piratesHeal();
     HXP.scene = sm;
+    restoreShields();
+    updateMenu();
   }
 
   public function goToSector(name:String):Void
@@ -61,6 +79,15 @@ class Game
       case "core":
         HXP.scene = coreSectors[sectorNum-1];
     }
+    updateMenu();
+  }
+
+  public function addEncounter(_enc:Encounter):Void
+  {
+    var menu:Array<GameMenu> = new Array<GameMenu>();
+    HXP.scene.getType("game_menu", menu);
+
+    menu[0].addEncounter(_enc);
   }
 
   public function addItem(_item:Item):Void
@@ -75,6 +102,7 @@ class Game
         if(item.name == _item.name) {
           item.amount += _item.amount;
           menu[0].updateGraphic();
+          menu[0].layoutMenu();
           return;
         }
       }
@@ -83,12 +111,99 @@ class Game
       inventory.push(item);
       menu[0].addItem(item);
     }
-
   }
 
   public function pulse():Void
   {
-
+    useFuel(1);
+    if(HXP.scene != sm) {
+      piratesAttack();
+    }
+    updateMenu();
+    turnNumber++;
   }
 
+  public function updateMenu():Void
+  {
+    if(HXP.scene == sm) {
+      sm.gameMenu.updateGraphic();
+    } else {
+      cast(HXP.scene, Sector).gameMenu.updateGraphic();
+    }
+  }
+
+  public function piratesAttack():Void
+  {
+    var sector:Sector = cast(HXP.scene, Sector);
+    sector.grid.eachBlock(function(s:Space, i:Int, j:Int):Void {
+      if(s.explored) {
+        if(s.encounter != null && s.encounter.encounterType == EncounterType.Pirate) {
+          var p:Pirate = cast(s.encounter, Pirate);
+          if(p.turnUncovered < turnNumber) {
+            takeDamage(p.attack);
+          }
+        }
+      }
+    });
+  }
+
+  public function piratesHeal():Void
+  {
+    var sector:Sector = cast(HXP.scene, Sector);
+    sector.grid.eachBlock(function(s:Space, i:Int, j:Int):Void {
+      if(s.explored) {
+        if(s.encounter != null && s.encounter.encounterType == EncounterType.Pirate) {
+          var p:Pirate = cast(s.encounter, Pirate);
+          p.health = maxHealth;
+        }
+      }
+    });
+  }
+
+  public function useFuel(howMuch:Int):Void
+  {
+    fuel -= howMuch;
+
+    if(fuel < 0) {
+      fuel = 0;
+      shields = 0;
+    }
+  }
+
+  public function restoreShields():Void
+  {
+    if(fuel > 0) {
+      shields = maxShields;
+    }
+  }
+
+  public function takeDamage(howMuch:Int):Void
+  {
+    var damageTaken:Int = 0;
+    if(shields > 0) {
+      if(howMuch >= shields) {
+        damageTaken = shields;
+        shields = 0;
+      } else {
+        shields -= howMuch;
+        damageTaken = howMuch;
+      }
+    }
+
+    if(damageTaken == howMuch) return;
+
+    if((howMuch-damageTaken) >= health) {
+      damageTaken += health;
+      health = 0;
+    } else {
+      health -= (howMuch-damageTaken);
+      damageTaken = howMuch;
+    }
+  }
+
+  public function attackPirate(pmi:PirateMenuItem):Void
+  {
+    pmi.pirate.takeDamage(attack);
+    pulse();
+  }
 }

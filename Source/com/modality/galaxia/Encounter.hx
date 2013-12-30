@@ -8,10 +8,11 @@ class Encounter extends Base
   public var encounterType:EncounterType;
   public var description:String;
 
-  public function new(_et:EncounterType, _desc:String) {
+  public function new(_et:EncounterType, _name:String, _desc:String) {
     super();
     layer = 1;
     encounterType = _et;
+    name = _name;
     description = _desc;
   }
 
