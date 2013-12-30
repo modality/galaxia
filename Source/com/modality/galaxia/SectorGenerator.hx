@@ -6,7 +6,7 @@ class SectorGenerator
 
   public static function createSectorSpaces(sectorType:SectorType):Array<Space> {
     var sg:SectorGenerator;
-    var spaces:Array<Space> = new Array<Space>();
+    var spaces:Array<Space>;
 
     switch(sectorType) {
       case DeepCore:
@@ -22,6 +22,7 @@ class SectorGenerator
     }
 
     do {
+      spaces = new Array<Space>();
       for(i in 0...(Constants.GRID_W * Constants.GRID_H)) {
         spaces.push(sg.createSpace());
       }

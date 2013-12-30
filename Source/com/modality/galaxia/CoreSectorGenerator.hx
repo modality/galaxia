@@ -4,6 +4,36 @@ import com.modality.aug.AugRandom;
 
 class CoreSectorGenerator extends SectorGenerator
 {
+  public override function validSector(spaces:Array<Space>):Bool {
+    var trd:Int, tfm:Int, ast:Int, sci:Int, lib:Int, pir:Int, voids:Int;
+
+    trd = 0; tfm = 0; ast = 0; sci = 0; lib = 0; pir = 0; voids = 0;
+
+    for(space in spaces) {
+      if(space.spaceType == SpaceType.Voidness) {
+        voids++;
+      }
+      if(space.encounter != null) {
+        switch(space.encounter.encounterType) {
+          case Trader: trd++;
+          case Terraformer: tfm++;
+          case Astronomer: ast++;
+          case Scientist: sci++;
+          case Librarian: lib++;
+          case Pirate: pir++;
+        }
+      }
+    }
+
+    if(voids < 3) return false;
+    if(trd < 2 || trd > 6) return false;
+    if(tfm < 1 || tfm > 5) return false;
+    if(ast < 1 || ast > 5) return false;
+    if(sci < 1 || sci > 5) return false;
+    if(lib < 2 || lib > 6) return false;
+    return true;
+  }
+
   public override function baseSquare():SpaceType
   {
     return AugRandom.weightedChoice([
@@ -15,26 +45,13 @@ class CoreSectorGenerator extends SectorGenerator
 
   public override function spaceHappening(spaceType:SpaceType):SpaceHappening
   {
-    switch(spaceType) {
-      case Voidness:
-        return AugRandom.weightedChoice([
-          SpaceHappening.Nothing => 80,
-          SpaceHappening.Friendly => 20
-        ]);
-      case Planet:
-        return AugRandom.weightedChoice([
-          SpaceHappening.Nothing => 5,
-          SpaceHappening.Item => 15,
-          SpaceHappening.Friendly => 40,
-          SpaceHappening.Quest => 40
-        ]);
-      case Star:
-        return AugRandom.weightedChoice([
-          SpaceHappening.Nothing => 60,
-          SpaceHappening.Friendly => 20,
-          SpaceHappening.Item => 20
-        ]);
-    }
+    if(spaceType == SpaceType.Voidness) return SpaceHappening.Nothing;
+    return AugRandom.weightedChoice([
+      SpaceHappening.Nothing => 25,
+      SpaceHappening.Item => 15,
+      SpaceHappening.Friendly => 30,
+      SpaceHappening.Quest => 30
+    ]);
   }
 
   public override function fillSpace(space:Space, what:SpaceHappening):Void
@@ -54,14 +71,10 @@ class CoreSectorGenerator extends SectorGenerator
           space.item = new Item(good, AugRandom.range(1, 3));
         }
       case Friendly:
-        if(space.spaceType == SpaceType.Planet) {
-          space.encounter = Generator.generateEncounter(AugRandom.weightedChoice([
-            EncounterType.Librarian => 50,
-            EncounterType.Trader => 50
-          ]));
-        } else {
-          space.encounter = Generator.generateEncounter(EncounterType.Trader);
-        }
+        space.encounter = Generator.generateEncounter(AugRandom.weightedChoice([
+          EncounterType.Librarian => 50,
+          EncounterType.Trader => 50
+        ]));
       case Hostile:
         space.encounter = new Encounter(EncounterType.Pirate, "Pirate", "Your ship is beset by pirates!");
       case Quest:

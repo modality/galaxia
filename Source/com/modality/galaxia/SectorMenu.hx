@@ -41,7 +41,7 @@ class SectorMenu extends Scene
         default: "deep";
       }
       block.name = block.name + "_" + (i+1);
-      block.changeState("unexplored_sector");
+      block.updateGraphic();
       add(block);
       return block;
     });

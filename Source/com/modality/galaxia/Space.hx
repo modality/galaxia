@@ -28,12 +28,6 @@ class Space extends Block
     }
   }
 
-  public override function changeState(_state_str:String):Void
-  {
-    super.changeState(_state_str);
-    updateGraphic();
-  }
-
   public function explore():Void
   {
     if(!explored) {

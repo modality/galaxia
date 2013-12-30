@@ -34,13 +34,13 @@ class Game
     shields = maxShields;
     health = maxHealth;
     attack = 1;
+    fuel = Constants.STARTING_FUEL;
 
     unknownSectors = new Array<Sector>();
     outerSectors = new Array<Sector>();
     innerSectors = new Array<Sector>();
     coreSectors = new Array<Sector>();
 
-    fuel = 10;
     inventory = new Array<Item>();
 
     for(i in 0...5) {

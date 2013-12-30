@@ -13,7 +13,8 @@ class Constants
   public static var BLOCK_H:Int = 100;
 
   public static var STARTING_HEALTH:Int = 1;
-  public static var STARTING_SHIELDS: Int = 3;
+  public static var STARTING_SHIELDS:Int = 3;
+  public static var STARTING_FUEL:Int = 20;
 
   public static var UNEXPLORED_LAYER:Int = 3;
   public static var EXPLORED_LAYER:Int = 2;

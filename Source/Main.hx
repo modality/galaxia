@@ -32,10 +32,8 @@ class Main extends Engine
     HXP.scene = new SectorMenu();
 
     // STATISTICS OUTPUT
-    /*
-    Generator.init();
-    var gs:GeneratorStats = new GeneratorStats();
-    */
+    //Generator.init();
+    //var gs:GeneratorStats = new GeneratorStats();
 	}
 
 	public static function main()

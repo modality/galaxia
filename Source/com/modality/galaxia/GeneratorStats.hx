@@ -34,7 +34,6 @@ class GeneratorStats
 
   public function new()
   {
-
     core_traders = new Stat("core traders");
     core_astronomers = new Stat("core astronomers");
     core_librarians = new Stat("core librarians");
@@ -124,11 +123,13 @@ class GeneratorStats
       unknown_pirates.addNumber(countEncounters(EncounterType.Pirate, unknown));
     }
 
-    trace("name,mean,median,mode,lowest,highest");
+    var output:String = "";
+    output += "\nname,mean,median,mode,lowest,highest\n";
     for(stat in allStats) {
       stat.presort();
-      trace(stat.name+","+stat.mean()+","+stat.median()+","+stat.mode()+","+stat.rangeLow()+","+stat.rangeHigh());
+      output += stat.name+","+stat.mean()+","+stat.median()+","+stat.mode()+","+stat.rangeLow()+","+stat.rangeHigh()+"\n";
     }
+    trace(output);
   }
 
   public function countEncounters(_et:EncounterType, _s:Array<Space>):Int
