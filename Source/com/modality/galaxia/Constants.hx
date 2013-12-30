@@ -14,4 +14,9 @@ class Constants
 
   public static var STARTING_HEALTH:Int = 1;
   public static var STARTING_SHIELDS: Int = 3;
+
+  public static var UNEXPLORED_LAYER:Int = 3;
+  public static var EXPLORED_LAYER:Int = 2;
+  public static var ENCOUNTER_LAYER:Int = 1;
+  public static var EFFECTS_LAYER:Int = 0;
 }

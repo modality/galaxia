@@ -15,12 +15,26 @@ class CoreSectorGenerator extends SectorGenerator
 
   public override function spaceHappening(spaceType:SpaceType):SpaceHappening
   {
-    return AugRandom.weightedChoice([
-      SpaceHappening.Nothing => 5,
-      SpaceHappening.Item => 15,
-      SpaceHappening.Friendly => 40,
-      SpaceHappening.Quest => 40
-    ]);
+    switch(spaceType) {
+      case Voidness:
+        return AugRandom.weightedChoice([
+          SpaceHappening.Nothing => 80,
+          SpaceHappening.Friendly => 20
+        ]);
+      case Planet:
+        return AugRandom.weightedChoice([
+          SpaceHappening.Nothing => 5,
+          SpaceHappening.Item => 15,
+          SpaceHappening.Friendly => 40,
+          SpaceHappening.Quest => 40
+        ]);
+      case Star:
+        return AugRandom.weightedChoice([
+          SpaceHappening.Nothing => 60,
+          SpaceHappening.Friendly => 20,
+          SpaceHappening.Item => 20
+        ]);
+    }
   }
 
   public override function fillSpace(space:Space, what:SpaceHappening):Void
@@ -40,14 +54,18 @@ class CoreSectorGenerator extends SectorGenerator
           space.item = new Item(good, AugRandom.range(1, 3));
         }
       case Friendly:
-        Generator.generateEncounter(AugRandom.weightedChoice([
-          EncounterType.Librarian => 50,
-          EncounterType.Trader => 50
-        ]));
+        if(space.spaceType == SpaceType.Planet) {
+          space.encounter = Generator.generateEncounter(AugRandom.weightedChoice([
+            EncounterType.Librarian => 50,
+            EncounterType.Trader => 50
+          ]));
+        } else {
+          space.encounter = Generator.generateEncounter(EncounterType.Trader);
+        }
       case Hostile:
         space.encounter = new Encounter(EncounterType.Pirate, "Pirate", "Your ship is beset by pirates!");
       case Quest:
-        Generator.generateEncounter(AugRandom.weightedChoice([
+        space.encounter = Generator.generateEncounter(AugRandom.weightedChoice([
           EncounterType.Astronomer => 40,
           EncounterType.Terraformer => 30,
           EncounterType.Scientist => 30

@@ -15,13 +15,29 @@ class InnerSectorGenerator extends SectorGenerator
 
   public override function spaceHappening(spaceType:SpaceType):SpaceHappening
   {
-    return AugRandom.weightedChoice([
-      SpaceHappening.Nothing => 5,
-      SpaceHappening.Item => 20,
-      SpaceHappening.Friendly => 25,
-      SpaceHappening.Quest => 25,
-      SpaceHappening.Hostile => 25
-    ]);
+    switch(spaceType) {
+      case Voidness:
+        return AugRandom.weightedChoice([
+          SpaceHappening.Nothing => 50,
+          SpaceHappening.Friendly => 25,
+          SpaceHappening.Hostile => 25
+        ]);
+      case Planet:
+        return AugRandom.weightedChoice([
+          SpaceHappening.Nothing => 5,
+          SpaceHappening.Item => 20,
+          SpaceHappening.Friendly => 25,
+          SpaceHappening.Quest => 25,
+          SpaceHappening.Hostile => 25
+        ]);
+      case Star:
+        return AugRandom.weightedChoice([
+          SpaceHappening.Nothing => 30,
+          SpaceHappening.Friendly => 25,
+          SpaceHappening.Hostile => 25,
+          SpaceHappening.Item => 20
+        ]);
+    }
   }
 
   public override function fillSpace(space:Space, what:SpaceHappening):Void
@@ -41,10 +57,14 @@ class InnerSectorGenerator extends SectorGenerator
           space.item = new Item(good, AugRandom.range(3, 6));
         }
       case Friendly:
-        space.encounter = Generator.generateEncounter(AugRandom.weightedChoice([
-          EncounterType.Librarian => 35,
-          EncounterType.Trader => 65
-        ]));
+        if(space.spaceType == SpaceType.Planet) {
+          space.encounter = Generator.generateEncounter(AugRandom.weightedChoice([
+            EncounterType.Librarian => 40,
+            EncounterType.Trader => 60
+          ]));
+        } else {
+          space.encounter = Generator.generateEncounter(EncounterType.Trader);
+        }
       case Quest:
         space.encounter = Generator.generateEncounter(AugRandom.weightedChoice([
           EncounterType.Astronomer => 20,

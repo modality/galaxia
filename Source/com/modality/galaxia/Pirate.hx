@@ -27,7 +27,7 @@ class Pirate extends Encounter
     e.newType("explode", [0]);
     e.setMotion("explode", 0, 10, 4, 360, 25, 2);
     emitter.graphic = e;
-    emitter.layer = 0;
+    emitter.layer = Constants.EFFECTS_LAYER;
   }
   
   public function takeDamage(howMuch:Int):Void

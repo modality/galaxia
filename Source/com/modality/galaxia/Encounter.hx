@@ -10,7 +10,7 @@ class Encounter extends Base
 
   public function new(_et:EncounterType, _name:String, _desc:String) {
     super();
-    layer = 1;
+    layer = Constants.ENCOUNTER_LAYER;
     encounterType = _et;
     name = _name;
     description = _desc;

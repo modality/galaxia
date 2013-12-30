@@ -6,6 +6,9 @@ import com.modality.galaxia.SectorMenu;
 import com.modality.galaxia.Game;
 import com.modality.aug.AugTime;
 
+import com.modality.galaxia.Generator;
+import com.modality.galaxia.GeneratorStats;
+
 class Main extends Engine
 {
 
@@ -27,6 +30,12 @@ class Main extends Engine
 #end
     
     HXP.scene = new SectorMenu();
+
+    // STATISTICS OUTPUT
+    /*
+    Generator.init();
+    var gs:GeneratorStats = new GeneratorStats();
+    */
 	}
 
 	public static function main()

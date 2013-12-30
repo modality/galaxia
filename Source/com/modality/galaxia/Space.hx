@@ -5,9 +5,6 @@ import com.modality.aug.Block;
 
 class Space extends Block
 {
-  public static var UNEXPLORED_LAYER:Int = 3;
-  public static var EXPLORED_LAYER:Int = 2;
-
   public var spaceType:SpaceType;
   public var explored:Bool = false;
   public var encounter:Encounter;
@@ -18,7 +15,7 @@ class Space extends Block
   {
     super(_x, _y);
     type = "space";
-    layer = UNEXPLORED_LAYER;
+    layer = Constants.UNEXPLORED_LAYER;
     spaceType = SpaceType.Voidness;
   }
 
@@ -41,7 +38,7 @@ class Space extends Block
   {
     if(!explored) {
       explored = true;
-      layer = EXPLORED_LAYER;
+      layer = Constants.EXPLORED_LAYER;
       updateGraphic();
       if(encounter != null) {
         encounter.updateGraphic();
