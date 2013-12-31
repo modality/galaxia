@@ -19,18 +19,18 @@ class SectorMenu extends Scene
     super();
     Game.instance.setSectorMenu(this);
 
-    gameMenu = new GameMenu();
+    gameMenu = new GameMenu(true);
     add(gameMenu);
 
-    var ent:Base = new Base(20, 10);
+    var ent:Base = new Base(Constants.GRID_X, 10);
     var text:Text = new Text("Explore a sector:");
     text.size = Constants.FONT_SIZE_LG;
     ent.graphic = text;
     add(ent);
 
-    grid = new Grid<Space>(20, 50, this);
+    grid = new Grid<Space>(Constants.GRID_X, Constants.GRID_Y, Constants.GRID_W, Constants.GRID_H);
     grid.init(function(i:Int, j:Int):Space {
-      var block:Space = new Space(20+(i*Grid.BLOCK_W), 50+(j*Grid.BLOCK_H));
+      var block:Space = new Space(grid.x+(i*Constants.BLOCK_W), grid.y+(j*Constants.BLOCK_H));
       block.type = "sector";
       block.name = switch(j) {
         case 0: "unknown";
@@ -47,8 +47,14 @@ class SectorMenu extends Scene
     });
   }
 
+  public override function begin():Void
+  {
+    gameMenu.updateGraphic();
+  }
+
   public override function update():Void
   {
+    super.update();
     if(Input.mouseReleased) {
       var ent:Space = cast(collidePoint("sector", Input.mouseX, Input.mouseY), Space);
 

@@ -24,9 +24,7 @@ class Main extends Engine
 		//HXP.console.enable();
 #end
 #if mobile
-    if(HXP.stage.stageWidth >= 2048) {
-      HXP.screen.scale = 2;
-    }
+    HXP.screen.scale = 2;
 #end
     
     HXP.scene = new SectorMenu();

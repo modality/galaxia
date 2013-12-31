@@ -2,7 +2,15 @@ package com.modality.galaxia;
 
 import flash.display.BitmapData;
 import com.haxepunk.HXP;
+import com.haxepunk.Entity;
+import com.haxepunk.graphics.Image;
 import com.haxepunk.graphics.Emitter;
+import com.haxepunk.Tween;
+import com.haxepunk.tweens.misc.Alarm;
+import com.haxepunk.tweens.misc.VarTween;
+import com.haxepunk.tweens.motion.LinearPath;
+import com.haxepunk.utils.Ease;
+
 import com.modality.aug.Base;
 
 class Pirate extends Encounter
@@ -11,7 +19,8 @@ class Pirate extends Encounter
   public var attack:Int;
   public var health:Int;
   public var maxHealth:Int;
-  public var emitter:Base;
+  public var emitter:Emitter;
+  public var emitter_entity:Entity;
 
   public function new(_atk:Int, _hp:Int)
   {
@@ -20,14 +29,17 @@ class Pirate extends Encounter
     health = _hp;
     maxHealth = _hp;
 
-    var bmd:BitmapData = new BitmapData(5, 5, false, 0xFF0000);
-
-    emitter = new Base();
-    var e:Emitter = new Emitter(bmd, 40, 40);
-    e.newType("explode", [0]);
-    e.setMotion("explode", 0, 10, 4, 360, 25, 2);
-    emitter.graphic = e;
-    emitter.layer = Constants.EFFECTS_LAYER;
+    var bmd:BitmapData = new BitmapData(5, 5, false, 0xFFFFFF);
+    emitter = new Emitter(bmd, 5, 5);
+    emitter.newType("damage", [0]);
+    emitter.setAlpha("damage", 1, 0.5);
+    emitter.setColor("damage", 0xFFFF00, 0xCC0000);
+    emitter.setMotion("damage", 0, 20, 5, 360, 10, 5);
+    
+    emitter.newType("smoke", [0]);
+    emitter.setAlpha("smoke", 1, 0.8);
+    emitter.setColor("smoke", 0xFFFFFF, 0x666666);
+    emitter.setMotion("smoke", 0, 10, 7, 360, 5, 7);
   }
   
   public function takeDamage(howMuch:Int):Void
@@ -35,9 +47,11 @@ class Pirate extends Encounter
     var s:Sector = cast(HXP.scene, Sector);
     health -= howMuch;
     if(health <= 0) {
-      s.gameMenu.removeEncounter(this);
-      s.remove(this);
+      s.removeEncounter(this);
+      Game.instance.addItem(Generator.pirateReward());
+      destroy();
     } else {
+      damage();
       var emi:EncounterMenuItem = s.gameMenu.getEncounter(this);
       if(emi != null) {
         emi.updateGraphic();
@@ -48,20 +62,33 @@ class Pirate extends Encounter
   public override function added():Void
   {
     super.added();
-    emitter.x = x;
-    emitter.y = y;
-    scene.add(emitter);
+    emitter_entity = HXP.scene.addGraphic(emitter);
+    emitter_entity.layer = 0;
+    scene.add(emitter_entity);
   }
 
   public override function removed():Void
   {
+    scene.remove(emitter_entity);
     super.removed();
-    scene.remove(emitter);
   }
 
-  public function explode():Void
+  public function damage():Void
   {
-    trace("ASPLODE");
-    cast(emitter.graphic, Emitter).emit("explode", 0, 0);
+    for(i in 0...10) {
+      emitter.emit("smoke", x+18, y+18);
+      emitter.emit("damage", x+18, y+18);
+    }
+  }
+
+  public function destroy():Void
+  {
+    damage();
+    var vt = new VarTween(null, TweenType.OneShot);
+    vt.tween(cast(this.graphic, Image), "alpha", 0, 7, Ease.sineInOut);
+    addTween(vt, true);
+    addTween(new Alarm(9,  function(o:Dynamic):Void {
+      scene.remove(this);
+    }, TweenType.OneShot),true);
   }
 }

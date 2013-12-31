@@ -14,7 +14,7 @@ class PirateMenuItem extends EncounterMenuItem
   {
     super();
     pirate = _p;
-    type = "pirate_menu_item";
+    type = "encounter";
 
     var _text:Text = new Text("");
     _text.size = Constants.FONT_SIZE_SM;

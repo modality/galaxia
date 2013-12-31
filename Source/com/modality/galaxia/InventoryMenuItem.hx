@@ -12,10 +12,12 @@ class InventoryMenuItem extends Base
   {
     super();
     item = _item;
+    type = "inventoryMenuItem";
     text = new Text(item.name+" ("+item.amount+")");
     text.size = Constants.FONT_SIZE_SM;
     text.color = 0xFFFFFF;
     this.graphic = text;
+    setHitboxTo(this.graphic);
   }
 
   public function updateGraphic():Void

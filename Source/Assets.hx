@@ -23,6 +23,8 @@ class Assets
   public static var SHIP_SHIELD_2;
   public static var SHIP_SHIELD_3;
 
+  public static var MENU_PANEL;
+
   public static function init()
   {
     SECTOR_SELECT = "assets/sector_select.png";
@@ -45,6 +47,8 @@ class Assets
     SHIP_SHIELD_1 = "assets/ship_1.png";
     SHIP_SHIELD_2 = "assets/ship_2.png";
     SHIP_SHIELD_3 = "assets/ship_3.png";
+
+    MENU_PANEL = "assets/menu_panel.png";
   }
 
 }

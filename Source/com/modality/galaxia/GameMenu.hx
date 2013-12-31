@@ -8,13 +8,16 @@ class GameMenu extends Base
 {
   public var shipDisplay:ShipMenuItem;
   public var fuelGauge:Base;
-  public var returnToSector:Base;
+  public var galaxyMapBtn:TextBase;
+  public var regenShieldBtn:TextBase;
   public var items:Array<InventoryMenuItem>;
   public var encounters:Array<EncounterMenuItem>;
+  public var galaxyMap:Bool;
 
-  public function new()
+  public function new(_galaxyMap:Bool = false)
   {
-    super(550, 10);
+    super(20, 10);
+    galaxyMap = _galaxyMap;
     type = "game_menu";
     items = new Array<InventoryMenuItem>();
     encounters = new Array<EncounterMenuItem>();
@@ -48,9 +51,22 @@ class GameMenu extends Base
     ent.graphic = text;
     scene.add(ent);
 
-    for(item in Game.instance.inventory) {
-      addItem(item);
+    if(!galaxyMap) {
+      galaxyMapBtn = new TextBase("Return to\nGalaxy Map\n(2 Fuel)");
+      galaxyMapBtn.x = x+120;
+      galaxyMapBtn.y = y+40;
+      galaxyMapBtn.text.color = 0xFF0000;
+      galaxyMapBtn.type = "galaxyMapBtn";
+      scene.add(galaxyMapBtn);
     }
+
+    regenShieldBtn = new TextBase("Regen Shield");
+    regenShieldBtn.x = x+120;
+    regenShieldBtn.y = y+120;
+    regenShieldBtn.text.color = 0x00FFFF;
+    regenShieldBtn.type = "regenShieldBtn";
+
+    updateGraphic();
   }
 
   public function addEncounter(_enc:Encounter):Void
@@ -83,10 +99,15 @@ class GameMenu extends Base
 
   public function removeEncounter(_enc:Encounter):Void
   {
+    var emiToRemove:EncounterMenuItem = null;
     for(emi in encounters) {
       if(emi.hasEncounter(_enc)) {
         scene.remove(emi);
+        emiToRemove = emi;
       }
+    }
+    if(emiToRemove != null) {
+      encounters.remove(emiToRemove);
     }
     layoutMenu();
   }
@@ -101,24 +122,32 @@ class GameMenu extends Base
     return null;
   }
 
-  public function addItem(_item:Item):Void
-  {
-    var imi:InventoryMenuItem = new InventoryMenuItem(_item);
-    items.push(imi);
-    scene.add(imi);
-    layoutMenu();
-  }
-
   public function updateGraphic():Void
   {
     cast(fuelGauge.graphic, Text).text = "Fuel: "+Game.instance.fuel;
+
+    if(Game.instance.shields < Game.instance.maxShields) {
+      scene.add(regenShieldBtn);
+      var shieldFuel = Game.instance.maxShields - Game.instance.shields;
+      regenShieldBtn.text.text = "Regen Shield ("+shieldFuel+")";
+    } else {
+      scene.remove(regenShieldBtn);
+    }
+
     shipDisplay.updateGraphic();
-    for(gmi in items) {
-      gmi.updateGraphic();
+    for(imi in items) {
+      scene.remove(imi);
+    }
+    items = new Array<InventoryMenuItem>();
+    for(item in Game.instance.inventory) {
+      var imi:InventoryMenuItem = new InventoryMenuItem(item);
+      items.push(imi);
+      scene.add(imi);
     }
     for(emi in encounters) {
       emi.updateGraphic();
     }
+    layoutMenu();
   }
 
   public function layoutMenu():Void

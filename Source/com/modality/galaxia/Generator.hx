@@ -45,6 +45,16 @@ class Generator
     return good_1[Std.random(good_1.length)] + " " + good_2[Std.random(good_2.length)];
   }
 
+  public static function pirateReward():Item
+  {
+    return AugRandom.weightedChoice([
+      new Item(commonGood.name, 10) => 30,
+      new Item(uncommonGood.name, 5) => 30,
+      new Item("Fuel", 5) => 20,
+      new Item("Fuel", 10) => 10
+    ]);
+  }
+
   public static function generateSectorName():String
   {
     var generatedName:Bool = false;

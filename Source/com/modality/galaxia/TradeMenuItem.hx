@@ -9,26 +9,27 @@ class TradeMenuItem extends EncounterMenuItem
   public var encounters:Array<Encounter>;
   public var trader_icon:Base;
   public var librarian_icon:Base;
-  public var text:Base;
+  public var text:TextBase;
 
   public function new(_enc:Encounter)
   {
     super();
+    type = "encounter";
 
     encounters = new Array<Encounter>();
     encounters.push(_enc);
 
-    var _text:Text = new Text("Trade / Identify");
-    _text.size = Constants.FONT_SIZE_SM;
-    _text.color = 0xFFFFFF;
-    text = new Base();
-    text.graphic = _text;
+    text = new TextBase("Trade / Identify");
+    text.text.size = Constants.FONT_SIZE_SM; 
+    text.text.color = 0xFFFFFF;
 
     trader_icon = new Base();
     trader_icon.graphic = new Image(Assets.TRADER_ICON);
 
     librarian_icon = new Base();
     librarian_icon.graphic = new Image(Assets.LIBRARIAN_ICON);
+
+    setHitboxTo(trader_icon.graphic);
   }
 
   public override function added():Void

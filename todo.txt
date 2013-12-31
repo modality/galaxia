@@ -1,0 +1,34 @@
+GALAXIA
+
+Spice
+Dwarf Star - Red, Brown, White
+Giant Star - Blue, Red Yellow
+Orange Star??
+Black Hole
+Protoplanetary Disk
+Nebula
+Supernova
+
+Space stations
+Abandoned space stations
+Derelict ships
+
+
+----
+
+Sector backgrounds
+Decouple space type from encounter
+
+
+SCIENTIST -> defense??
+  - shield up
+  - cloaking device (pirates don't attack until you do)
+
+TERRAFORMER -> attack?
+  - attack up
+  - missile launcher
+
+ASTRONOMER -> scanner
+  - show count of pirates
+  - show location of pirates
+  - show strengths of pirates

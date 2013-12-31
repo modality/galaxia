@@ -14,6 +14,7 @@ class QuestMenuItem extends EncounterMenuItem
   public function new(_enc:Encounter)
   {
     super();
+    type = "encounter";
 
     encounterType = _enc.encounterType;
     encounters = new Array<Encounter>();

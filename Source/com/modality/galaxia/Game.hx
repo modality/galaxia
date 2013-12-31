@@ -60,7 +60,7 @@ class Game
   {
     piratesHeal();
     HXP.scene = sm;
-    restoreShields();
+    useFuel(2);
     updateMenu();
   }
 
@@ -98,29 +98,37 @@ class Game
     if(_item.name == "Fuel") {
       fuel += _item.amount;
     } else {
+      var foundItem:Bool = false;
       for(item in inventory) {
         if(item.name == _item.name) {
+          foundItem = true;
           item.amount += _item.amount;
-          menu[0].updateGraphic();
-          menu[0].layoutMenu();
           return;
         }
       }
-
-      var item:Item = new Item(_item.name, _item.amount);
-      inventory.push(item);
-      menu[0].addItem(item);
+      if(!foundItem) {
+        var item:Item = new Item(_item.name, _item.amount);
+        inventory.push(item);
+      }
     }
+    menu[0].updateGraphic();
   }
 
   public function pulse():Void
   {
-    useFuel(1);
     if(HXP.scene != sm) {
       piratesAttack();
     }
     updateMenu();
     turnNumber++;
+  }
+
+  public function explored():Void
+  {
+    if(HXP.scene != sm) {
+      useFuel(1);
+    }
+    pulse();
   }
 
   public function updateMenu():Void
@@ -139,7 +147,7 @@ class Game
       if(s.explored) {
         if(s.encounter != null && s.encounter.encounterType == EncounterType.Pirate) {
           var p:Pirate = cast(s.encounter, Pirate);
-          if(p.turnUncovered < turnNumber) {
+          if(p.health > 0 && p.turnUncovered < turnNumber) {
             takeDamage(p.attack);
           }
         }
@@ -160,6 +168,22 @@ class Game
     });
   }
 
+  public function sellItem(_item:Item):Void
+  {
+    var itemValue:Int = 0;
+    if(_item.name == Generator.commonGood.name) {
+      itemValue = _item.amount; 
+    } else if(_item.name == Generator.uncommonGood.name) {
+      itemValue = _item.amount * 2;
+    } else if(_item.name == Generator.rareGood.name) {
+      itemValue = _item.amount * 3;
+    }
+
+    fuel += itemValue;
+    inventory.remove(_item);
+    updateMenu();
+  }
+
   public function useFuel(howMuch:Int):Void
   {
     fuel -= howMuch;
@@ -172,9 +196,11 @@ class Game
 
   public function restoreShields():Void
   {
+    useFuel(maxShields - shields);
     if(fuel > 0) {
       shields = maxShields;
     }
+    updateMenu();
   }
 
   public function takeDamage(howMuch:Int):Void
@@ -201,9 +227,9 @@ class Game
     }
   }
 
-  public function attackPirate(pmi:PirateMenuItem):Void
+  public function attackPirate(pirate:Pirate):Void
   {
-    pmi.pirate.takeDamage(attack);
+    pirate.takeDamage(attack);
     pulse();
   }
 }
