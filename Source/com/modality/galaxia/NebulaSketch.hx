@@ -1,5 +1,7 @@
 package com.modality.galaxia;
 
+import flash.geom.Point;
+import flash.geom.Rectangle;
 import flash.display.BitmapData;
 import com.modality.aug.Sketch;
 import com.modality.aug.Vector3;
@@ -86,16 +88,29 @@ class NebulaSketch extends Sketch {
     var c1:Int = color(hue_1, 100, floor(random(10)+5));
     var c2:Int = color(hue_2, floor(random(10)+80), floor(random(10)+90));
 
-    buf.loadPixels();
-    for(i in 0...width) {
-      for(j in 0...height) {
-        buf.pixels[j*width+i] = lerpColor(c1, c2, buf.brightness(buf.pixels[j*width+i])/100);
-      }
+    var redChan:Array<Int> = new Array<Int>(),
+        greenChan:Array<Int> = new Array<Int>(),
+        blueChan:Array<Int> = new Array<Int>(),
+        alphaChan:Array<Int> = new Array<Int>();
+
+    var c1_red:Int = red(c1),
+        c1_green:Int = green(c1),
+        c1_blue:Int = blue(c1),
+        c2_red:Int = red(c2),
+        c2_green:Int = green(c2),
+        c2_blue:Int = blue(c2);
+
+    for(i in 0...256) {
+      redChan.push(floor(lerp(c1_red, c2_red, i/255)) << 16 | 0xFF000000);
+      greenChan.push(floor(lerp(c1_green, c2_green, i/255)) << 8 | 0xFF000000);
+      blueChan.push(floor(lerp(c1_blue, c2_blue, i/255)) | 0xFF000000);
+      alphaChan.push(0xFF000000);
     }
-    buf.updatePixels();
+
+    buf.bitmap.paletteMap(buf.output(), new Rectangle(0, 0, width, height), new Point(0, 0),
+      redChan, greenChan, blueChan, alphaChan);
 
     buf.blend(buf.bitmap, BlendMode.Overlay);
-    
     colorMode(RGB, 255);
     buf.fill(color(255), 10);
     buf.noStroke();
