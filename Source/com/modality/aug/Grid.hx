@@ -6,20 +6,17 @@ class Grid<T:(Block)>
   public var y:Int;
   public var width:Int;
   public var height:Int;
+  public var createFn:Int->Int->T;
 
   public var blocks:Array<Array<T>>;
 
-  public function new(_x:Int, _y:Int, _width:Int, _height:Int)
+  public function new(_x:Int, _y:Int, _width:Int, _height:Int, createFn:Int->Int->T)
   {
     x = _x;
     y = _y;
     width = _width;
     height = _height;
     blocks = [];
-  }
-
-  public function init(createFn:Int->Int->T):Void
-  {
     for(j in 0...height) {
       var rowArray:Array<T> = []; 
       for(i in 0...width) {
@@ -31,7 +28,7 @@ class Grid<T:(Block)>
     }
   }
 
-  public function getBlock(i:Int, j:Int):T
+  public function get(i:Int, j:Int):T
   {
     if(i < 0 || i >= width) return null;
     if(j < 0 || j >= height) return null;
@@ -39,28 +36,54 @@ class Grid<T:(Block)>
     return blocks[j][i];
   }
 
-  public function setBlock(i:Int, j:Int, _state_str:String):Void
+  public function set(i:Int, j:Int, block:T):Void
   {
     if(i < 0 || i >= width) return;
     if(j < 0 || j >= height) return;
-    getBlock(i, j).changeState(_state_str);
+
+    blocks[j][i] = block;
+  }
+
+  public function getState(i:Int, j:Int):String
+  {
+    if(i < 0 || i >= width) return null;
+    if(j < 0 || j >= height) return null;
+    return get(i, j).state_str;
+  }
+
+  public function setState(i:Int, j:Int, _state_str:String):Void
+  {
+    if(i < 0 || i >= width) return;
+    if(j < 0 || j >= height) return;
+    get(i, j).changeState(_state_str);
   }
 
   public function fillGrid(_state_str:String):Void
   {
     for(j in 0...height) {
       for(i in 0...width) {
-        setBlock(i, j, _state_str);
+        setState(i, j, _state_str);
       }
     }
   }
 
-  public function eachBlock(fn:T->Int->Int->Void)
+  public function each(fn:T->Int->Int->Void):Void
   {
     for(j in 0...height) {
       for(i in 0...width) {
-        fn(getBlock(i, j), i, j);
+        fn(get(i, j), i, j);
       }
     }
+  }
+
+  public function map(fn:T->Int->Int->T):Grid<T>
+  {
+    var mapped:Grid<T> = new Grid(x, y, width, height, createFn);
+    for(j in 0...height) {
+      for(i in 0...width) {
+        mapped.blocks[j][i] = fn(get(i,j), i, j);
+      }
+    }
+    return mapped;
   }
 }

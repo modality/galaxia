@@ -11,12 +11,13 @@ class Block extends Base
   public var objects:Array<Base>;
   public var object(get, set):Base;
 
-  public function new(_x:Int = 0, _y:Int = 0)
+  public function new(?_x:Int = 0, ?_y:Int = 0)
   {
     super(_x, _y);
     layer = 2;
     type = "block";
     state_str = "empty";
+    objects = [];
   }
 
   public function setIndex(_x_index:Int, _y_index:Int):Void
@@ -46,7 +47,4 @@ class Block extends Base
     objects = [object];
     return object;
   }
-
 }
-
-

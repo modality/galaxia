@@ -28,9 +28,8 @@ class SectorMenu extends Scene
     ent.graphic = text;
     add(ent);
 
-    grid = new Grid<Space>(Constants.GRID_X, Constants.GRID_Y, Constants.GRID_W, Constants.GRID_H);
-    grid.init(function(i:Int, j:Int):Space {
-      var block:Space = new Space(grid.x+(i*Constants.BLOCK_W), grid.y+(j*Constants.BLOCK_H));
+    grid = new Grid<Space>(Constants.GRID_X, Constants.GRID_Y, Constants.GRID_W, Constants.GRID_H, function(i:Int, j:Int):Space {
+      var block:Space = new Space(Constants.GRID_X+(i*Constants.BLOCK_W), Constants.GRID_Y+(j*Constants.BLOCK_H));
       block.type = "sector";
       block.name = switch(j) {
         case 0: "unknown";

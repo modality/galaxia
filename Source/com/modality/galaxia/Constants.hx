@@ -18,6 +18,7 @@ class Constants
   public static var STARTING_SHIELDS:Int = 3;
   public static var STARTING_FUEL:Int = 20;
 
+  public static var NEBULA_LAYER:Int = 4;
   public static var UNEXPLORED_LAYER:Int = 3;
   public static var EXPLORED_LAYER:Int = 2;
   public static var ENCOUNTER_LAYER:Int = 1;

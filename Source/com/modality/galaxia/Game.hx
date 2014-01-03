@@ -143,7 +143,7 @@ class Game
   public function piratesAttack():Void
   {
     var sector:Sector = cast(HXP.scene, Sector);
-    sector.grid.eachBlock(function(s:Space, i:Int, j:Int):Void {
+    sector.grid.each(function(s:Space, i:Int, j:Int):Void {
       if(s.explored) {
         if(s.encounter != null && s.encounter.encounterType == EncounterType.Pirate) {
           var p:Pirate = cast(s.encounter, Pirate);
@@ -158,7 +158,7 @@ class Game
   public function piratesHeal():Void
   {
     var sector:Sector = cast(HXP.scene, Sector);
-    sector.grid.eachBlock(function(s:Space, i:Int, j:Int):Void {
+    sector.grid.each(function(s:Space, i:Int, j:Int):Void {
       if(s.explored) {
         if(s.encounter != null && s.encounter.encounterType == EncounterType.Pirate) {
           var p:Pirate = cast(s.encounter, Pirate);
