@@ -3,21 +3,15 @@ package com.modality.galaxia;
 import com.haxepunk.graphics.Text;
 import com.modality.aug.Base;
 
-class InventoryMenuItem extends Base
+class InventoryMenuItem extends TextBase
 {
   public var item:Item;
-  public var text:Text;
 
   public function new(_item:Item)
   {
-    super();
+    super(_item.name+" ("+_item.amount+")");
     item = _item;
     type = "inventoryMenuItem";
-    text = new Text(item.name+" ("+item.amount+")");
-    text.size = Constants.FONT_SIZE_SM;
-    text.color = 0xFFFFFF;
-    this.graphic = text;
-    setHitboxTo(this.graphic);
   }
 
   public function updateGraphic():Void

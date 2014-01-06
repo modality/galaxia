@@ -24,6 +24,9 @@ class Assets
   public static var SHIP_SHIELD_3;
 
   public static var MENU_PANEL;
+  public static var SECTOR_MAPPED;
+
+  public static var STAR_FONT;
 
   public static function init()
   {
@@ -49,6 +52,9 @@ class Assets
     SHIP_SHIELD_3 = "assets/ship_3.png";
 
     MENU_PANEL = "assets/menu_panel.png";
+    SECTOR_MAPPED = "assets/sector_mapped.png";
+
+    STAR_FONT = "assets/CasualEncounter.ttf";
   }
 
 }

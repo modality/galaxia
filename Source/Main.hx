@@ -5,9 +5,9 @@ import com.haxepunk.HXP;
 import com.modality.galaxia.SectorMenu;
 import com.modality.galaxia.Game;
 import com.modality.aug.AugTime;
-
 import com.modality.galaxia.Generator;
 import com.modality.galaxia.GeneratorStats;
+import com.modality.galaxia.Constants;
 
 class Main extends Engine
 {
@@ -25,6 +25,7 @@ class Main extends Engine
 #end
 #if mobile
     HXP.screen.scale = 2;
+    HXP.screen.color = Constants.COLOR_BG;
 #end
     
     HXP.scene = new SectorMenu();

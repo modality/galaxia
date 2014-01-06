@@ -16,6 +16,7 @@ class Game
   public var attack:Int;
   public var shields:Int;
   public var health:Int;
+  public var sectorsMapped:Int;
 
   public var maxShields:Int;
   public var maxHealth:Int;
@@ -29,6 +30,7 @@ class Game
     Generator.init();
 
     turnNumber = 0;
+    sectorsMapped = 0;
     maxShields = Constants.STARTING_SHIELDS;
     maxHealth = Constants.STARTING_HEALTH;
     shields = maxShields;
@@ -129,6 +131,11 @@ class Game
       useFuel(1);
     }
     pulse();
+  }
+
+  public function exploreSector():Void
+  {
+    sectorsMapped++;
   }
 
   public function updateMenu():Void

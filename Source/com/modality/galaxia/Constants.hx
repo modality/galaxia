@@ -2,17 +2,29 @@ package com.modality.galaxia;
 
 class Constants
 {
-  public static var FONT_SIZE_LG:Int = 24;
-  public static var FONT_SIZE_SM:Int = 16;
+  //s 5, 16, 24, 48 and 72 p
+  public static var FONT_SIZE_LG:Int = 16;
+  public static var FONT_SIZE_SM:Int = 8;
 
   public static var COLOR_FUEL:Int = 0xFFB300;
+  public static var COLOR_ENEMY:Int = 0xFF4000;
+  public static var COLOR_MENU:Int = 0x051A46;
+  public static var COLOR_LINE:Int = 0x57A9E9;
+  public static var COLOR_BG:Int = 0x02182D;
 
-  public static var GRID_X:Int = 444;
-  public static var GRID_Y:Int = 50;
-  public static var GRID_W:Int = 5;
-  public static var GRID_H:Int = 5;
-  public static var BLOCK_W:Int = 100;
-  public static var BLOCK_H:Int = 100;
+  public static var COLOR_ACCENT_1:Int = 0x602242;
+  public static var COLOR_ACCENT_2:Int = 0x87283B;
+  public static var COLOR_ACCENT_3:Int = 0xFCDC56;
+  public static var COLOR_ACCENT_4:Int = 0xFFF9D2;
+
+  public static var SCREEN_W:Int = 1024;
+  public static var SCREEN_H:Int = 768;
+  public static var GRID_X:Int = 320;
+  public static var GRID_Y:Int = 64;
+  public static var GRID_W:Int = 8;
+  public static var GRID_H:Int = 8;
+  public static var BLOCK_W:Int = 80;
+  public static var BLOCK_H:Int = 80;
 
   public static var STARTING_HEALTH:Int = 1;
   public static var STARTING_SHIELDS:Int = 3;

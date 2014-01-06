@@ -9,19 +9,14 @@ class TradeMenuItem extends EncounterMenuItem
   public var encounters:Array<Encounter>;
   public var trader_icon:Base;
   public var librarian_icon:Base;
-  public var text:TextBase;
 
   public function new(_enc:Encounter)
   {
-    super();
+    super("Trade / Identify");
     type = "encounter";
 
     encounters = new Array<Encounter>();
     encounters.push(_enc);
-
-    text = new TextBase("Trade / Identify");
-    text.text.size = Constants.FONT_SIZE_SM; 
-    text.text.color = 0xFFFFFF;
 
     trader_icon = new Base();
     trader_icon.graphic = new Image(Assets.TRADER_ICON);
@@ -42,16 +37,13 @@ class TradeMenuItem extends EncounterMenuItem
     librarian_icon.y = this.y;
     scene.add(librarian_icon);
 
-    text.x = this.x + 100;
-    text.y = this.y;
-    scene.add(text);
+    text.x = 100;
   }
 
   public override function removed():Void
   {
     scene.remove(trader_icon);
     scene.remove(librarian_icon);
-    scene.remove(text);
   }
 
   public override function addEncounter(_enc:Encounter):Void
@@ -77,8 +69,7 @@ class TradeMenuItem extends EncounterMenuItem
     librarian_icon.x = this.x + 50;
     librarian_icon.y = this.y;
 
-    text.x = this.x + 100;
-    text.y = this.y;
+    text.x = 100;
   }
 }
 

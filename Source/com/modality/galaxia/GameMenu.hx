@@ -1,13 +1,15 @@
 package com.modality.galaxia;
 
+import flash.display.BitmapData;
 import com.haxepunk.HXP;
 import com.haxepunk.graphics.Text;
+import com.haxepunk.graphics.Image;
 import com.modality.aug.Base;
 
 class GameMenu extends Base
 {
   public var shipDisplay:ShipMenuItem;
-  public var fuelGauge:Base;
+  public var fuelGauge:TextBase;
   public var galaxyMapBtn:TextBase;
   public var regenShieldBtn:TextBase;
   public var items:Array<InventoryMenuItem>;
@@ -16,43 +18,42 @@ class GameMenu extends Base
 
   public function new(_galaxyMap:Bool = false)
   {
-    super(20, 10);
+    super(0, 0);
     galaxyMap = _galaxyMap;
     type = "game_menu";
     items = new Array<InventoryMenuItem>();
     encounters = new Array<EncounterMenuItem>();
+    this.graphic = new Image(new BitmapData(300, Constants.SCREEN_H, false, Constants.COLOR_MENU));
   }
 
   public override function added()
   {
-    var ent:Base;
-    var text:Text;
+    var ent:TextBase;
 
-    text = new Text("GALAXIA");
-    text.size = Constants.FONT_SIZE_LG;
-    this.graphic = text;
+    ent = new TextBase("GALAXIA");
+    ent.x = x+20;
+    ent.y = y+10;
+    ent.text.size = Constants.FONT_SIZE_LG;
+    scene.add(ent);
 
     shipDisplay = new ShipMenuItem();
     shipDisplay.x = x;
     shipDisplay.y = y+40;
     scene.add(shipDisplay);
 
-    fuelGauge = new Base(x, y+120);
-    text = new Text("Fuel: "+Game.instance.fuel);
-    text.size = Constants.FONT_SIZE_SM;
-    text.color = Constants.COLOR_FUEL;
-    fuelGauge.graphic = text;
+    fuelGauge = new TextBase("Fuel: "+Game.instance.fuel);
+    fuelGauge.x = x;
+    fuelGauge.y = y+120;
+    fuelGauge.text.color = Constants.COLOR_FUEL;
     scene.add(fuelGauge);
 
-    ent = new Base(x, y+160);
-    text = new Text("Inventory");
-    text.size = Constants.FONT_SIZE_SM;
-    text.color = 0xFFFFFF;
-    ent.graphic = text;
+    ent = new TextBase("Inventory");
+    ent.x = x;
+    ent.y = y+160;
     scene.add(ent);
 
     if(!galaxyMap) {
-      galaxyMapBtn = new TextBase("Return to\nGalaxy Map\n(2 Fuel)");
+      galaxyMapBtn = new TextBase("Back to Galaxy\n(2 fuel)");
       galaxyMapBtn.x = x+120;
       galaxyMapBtn.y = y+40;
       galaxyMapBtn.text.color = 0xFF0000;
@@ -60,11 +61,12 @@ class GameMenu extends Base
       scene.add(galaxyMapBtn);
     }
 
-    regenShieldBtn = new TextBase("Regen Shield");
+    regenShieldBtn = new TextBase("Restore Shields\n(0 fuel)");
     regenShieldBtn.x = x+120;
-    regenShieldBtn.y = y+120;
-    regenShieldBtn.text.color = 0x00FFFF;
+    regenShieldBtn.y = y+80;
+    regenShieldBtn.text.color = 0xCCCCCC;
     regenShieldBtn.type = "regenShieldBtn";
+    scene.add(regenShieldBtn);
 
     updateGraphic();
   }
@@ -124,14 +126,15 @@ class GameMenu extends Base
 
   public function updateGraphic():Void
   {
-    cast(fuelGauge.graphic, Text).text = "Fuel: "+Game.instance.fuel;
+    fuelGauge.text.text = "Fuel: "+Game.instance.fuel;
 
     if(Game.instance.shields < Game.instance.maxShields) {
-      scene.add(regenShieldBtn);
       var shieldFuel = Game.instance.maxShields - Game.instance.shields;
-      regenShieldBtn.text.text = "Regen Shield ("+shieldFuel+")";
+      regenShieldBtn.text.text = "Restore Shields\n("+shieldFuel+" fuel)";
+      regenShieldBtn.text.color = 0x00FFFF;
     } else {
-      scene.remove(regenShieldBtn);
+      regenShieldBtn.text.text = "Restore Shields\n(0 fuel)";
+      regenShieldBtn.text.color = 0xCCCCCC;
     }
 
     shipDisplay.updateGraphic();
@@ -140,9 +143,13 @@ class GameMenu extends Base
     }
     items = new Array<InventoryMenuItem>();
     for(item in Game.instance.inventory) {
-      var imi:InventoryMenuItem = new InventoryMenuItem(item);
-      items.push(imi);
-      scene.add(imi);
+      if(item == null) {
+        trace("null item!");
+      } else {
+        var imi:InventoryMenuItem = new InventoryMenuItem(item);
+        items.push(imi);
+        scene.add(imi);
+      }
     }
     for(emi in encounters) {
       emi.updateGraphic();

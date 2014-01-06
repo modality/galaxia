@@ -7,6 +7,7 @@ class Space extends Block
 {
   public var spaceType:SpaceType;
   public var explored:Bool = false;
+  public var onNebula:Bool = false;
   public var encounter:Encounter;
   public var item:Item;
   public var description:String;
@@ -55,7 +56,7 @@ class Space extends Block
       if(explored) {
         switch(spaceType) {
           case Voidness:
-            graphic = new Image(Assets.VOID_ICON);
+            graphic = null;
           case Star:
             graphic = new Image(Assets.STAR_ICON);
           case Planet:
@@ -73,6 +74,6 @@ class Space extends Block
       }
     }
 
-    setHitboxTo(graphic);
+    setHitbox(Constants.BLOCK_W, Constants.BLOCK_H, 0, 0);
   }
 }

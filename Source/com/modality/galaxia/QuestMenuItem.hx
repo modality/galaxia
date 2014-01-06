@@ -9,22 +9,15 @@ class QuestMenuItem extends EncounterMenuItem
   public var encounterType:EncounterType;
   public var encounters:Array<Encounter>;
   public var icon:Base;
-  public var text:Base;
 
   public function new(_enc:Encounter)
   {
-    super();
+    super("");
     type = "encounter";
 
     encounterType = _enc.encounterType;
     encounters = new Array<Encounter>();
     encounters.push(_enc);
-
-    var _text:Text = new Text("");
-    _text.size = Constants.FONT_SIZE_SM;
-    _text.color = 0xFFFFFF;
-    text = new Base();
-    text.graphic = _text;
 
     icon = new Base();
     icon.graphic = _enc.graphic;
@@ -37,15 +30,12 @@ class QuestMenuItem extends EncounterMenuItem
     icon.y = this.y;
     scene.add(icon);
 
-    text.x = this.x + 50;
-    text.y = this.y;
-    scene.add(text);
+    text.x = 50;
   }
 
   public override function removed():Void
   {
     scene.remove(icon);
-    scene.remove(text);
   }
 
   public override function addEncounter(_enc:Encounter):Void
@@ -62,12 +52,11 @@ class QuestMenuItem extends EncounterMenuItem
   public override function updateGraphic():Void
   {
     if(encounters.length < 1) return;
-    cast(text.graphic, Text).text = encounters[0].name+" Quests ("+encounters.length+")";
+    text.text = encounters[0].name+" Quests ("+encounters.length+")";
 
     icon.x = this.x;
     icon.y = this.y;
 
-    text.x = this.x + 50;
-    text.y = this.y;
+    text.x = 50;
   }
 }

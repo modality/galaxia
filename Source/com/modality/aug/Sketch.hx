@@ -19,9 +19,11 @@ enum ColorMode {
 }
 
 enum BlendMode {
+  HardLight;
   Multiply;
   Lightest;
   Overlay;
+  Screen;
 }
 
 class Sketch {
@@ -82,6 +84,8 @@ class Sketch {
       case Multiply: flash.display.BlendMode.MULTIPLY;
       case Lightest: flash.display.BlendMode.LIGHTEN;
       case Overlay: flash.display.BlendMode.OVERLAY;
+      case HardLight: flash.display.BlendMode.HARDLIGHT;
+      case Screen: flash.display.BlendMode.SCREEN;
     }
     _rasterize();
     bitmap.draw(_src, null, null, blendMode);

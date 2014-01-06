@@ -9,8 +9,8 @@ class SectorSketch extends Sketch {
 
   public override function setup():Void
   {
-    size(102, 102);
-    drawSize = 98;
+    size(Constants.BLOCK_W+2, Constants.BLOCK_H+2);
+    drawSize = Constants.BLOCK_W-2;
     ellipseMode(EllipseMode.Radius);
     noSmooth();
     sectorBgOn = loadImage(Assets.SECTOR_ON_ICON);
@@ -23,10 +23,10 @@ class SectorSketch extends Sketch {
 
     pushMatrix();
     translate(2, 2);
-    drawCircles(randomRange(1, 4), 10, 20, 5, color(64, 228, 96), true);
-    drawCircles(randomRange(1, 3), 15, 35, 5, color(255, 0, 32), false);
-    drawLines(randomRange(1, 5), 5, color(64, 32, 255));
-    drawCircles(randomRange(1, 10), 2, 2, 5, color(255, 255, 255), true);
+    drawCircles(randomRange(1, 4), 8, 16, 5, Constants.COLOR_ACCENT_1, true);
+    drawCircles(randomRange(1, 3), 12, 28, 5, Constants.COLOR_ACCENT_2, false);
+    drawLines(randomRange(1, 5), 5, Constants.COLOR_ACCENT_4);
+    drawCircles(randomRange(1, 10), 2, 2, 5, Constants.COLOR_ACCENT_3, true);
     popMatrix();
   }
 
@@ -53,7 +53,7 @@ class SectorSketch extends Sketch {
   private function drawLines(howMany:Int, padding:Int, col:Int):Void
   {
     stroke(col);
-    strokeWeight(3);
+    strokeWeight(2);
     noFill();
     
     for(n in 0...howMany) {

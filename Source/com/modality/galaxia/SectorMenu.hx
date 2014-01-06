@@ -22,10 +22,10 @@ class SectorMenu extends Scene
     gameMenu = new GameMenu(true);
     add(gameMenu);
 
-    var ent:Base = new Base(Constants.GRID_X, 10);
-    var text:Text = new Text("Explore a sector:");
-    text.size = Constants.FONT_SIZE_LG;
-    ent.graphic = text;
+    var ent:TextBase = new TextBase("Explore a sector:");
+    ent.x = Constants.GRID_X;
+    ent.y = 10;
+    ent.text.size = Constants.FONT_SIZE_LG;
     add(ent);
 
     grid = new Grid<Space>(Constants.GRID_X, Constants.GRID_Y, Constants.GRID_W, Constants.GRID_H, function(i:Int, j:Int):Space {

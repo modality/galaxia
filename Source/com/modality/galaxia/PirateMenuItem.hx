@@ -8,19 +8,12 @@ class PirateMenuItem extends EncounterMenuItem
 {
   public var pirate:Pirate;
   public var icon:Base;
-  public var text:Base;
 
   public function new(_p:Pirate)
   {
-    super();
+    super("");
     pirate = _p;
     type = "encounter";
-
-    var _text:Text = new Text("");
-    _text.size = Constants.FONT_SIZE_SM;
-    _text.color = 0xFFFFFF;
-    text = new Base();
-    text.graphic = _text;
 
     icon = new Base();
     icon.graphic = _p.graphic;
@@ -33,28 +26,22 @@ class PirateMenuItem extends EncounterMenuItem
     icon.y = this.y;
     scene.add(icon);
 
-    text.x = this.x + 50;
-    text.y = this.y;
-    scene.add(text);
-
-    setHitboxTo(icon.graphic);
+    text.x = 50;
   }
 
   public override function removed():Void
   {
     scene.remove(icon);
-    scene.remove(text);
   }
 
   public override function updateGraphic():Void
   {
-    cast(text.graphic, Text).text = "Pirate\n Attack: "+pirate.attack+" / Health: "+pirate.health;
+    text.text = "Pirate\nAttack: "+pirate.attack+" / Health: "+pirate.health;
 
     icon.x = this.x;
     icon.y = this.y;
 
-    text.x = this.x + 50;
-    text.y = this.y;
+    text.x = 50;
   }
 
   public override function hasEncounter(_enc:Encounter):Bool {
