@@ -52,10 +52,6 @@ class Pirate extends Encounter
       destroy();
     } else {
       damage();
-      var emi:EncounterMenuItem = s.gameMenu.getEncounter(this);
-      if(emi != null) {
-        emi.updateGraphic();
-      }
     }
   }
 

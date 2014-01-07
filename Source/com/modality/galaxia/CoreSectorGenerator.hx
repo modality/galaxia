@@ -4,7 +4,30 @@ import com.modality.aug.AugRandom;
 
 class CoreSectorGenerator extends SectorGenerator
 {
+  private var _spaces:Array<SpaceType>;
+
+  public function new() {
+    super();
+    _spaces = new Array<SpaceType>();
+
+    var numStars:Int = AugRandom.range(5, 8),
+        numPlanets:Int = AugRandom.range(5, 8);
+
+    for(i in 0...numStars) {
+      _spaces.push(SpaceType.Star);
+    }
+
+    for(i in 0...numPlanets) {
+      _spaces.push(SpaceType.Planet);
+    }
+
+    while(_spaces.length < (Constants.GRID_W * Constants.GRID_H)) {
+      _spaces.push(SpaceType.Voidness);
+    }
+  }
+
   public override function validSector(spaces:Array<Space>):Bool {
+    return true;
     var trd:Int, tfm:Int, ast:Int, sci:Int, lib:Int, pir:Int, voids:Int;
 
     trd = 0; tfm = 0; ast = 0; sci = 0; lib = 0; pir = 0; voids = 0;
@@ -36,16 +59,24 @@ class CoreSectorGenerator extends SectorGenerator
 
   public override function baseSquare():SpaceType
   {
+    return _spaces.splice(AugRandom.range(0, _spaces.length), 1)[0];
+    /*
     return AugRandom.weightedChoice([
-      SpaceType.Voidness => 20,
-      SpaceType.Star => 40,
-      SpaceType.Planet => 40
+      SpaceType.Voidness => 80,
+      SpaceType.Star => 10,
+      SpaceType.Planet => 10
     ]);
+    */
   }
 
   public override function spaceHappening(spaceType:SpaceType):SpaceHappening
   {
-    if(spaceType == SpaceType.Voidness) return SpaceHappening.Nothing;
+    if(spaceType == SpaceType.Voidness) {
+      return AugRandom.weightedChoice([
+        SpaceHappening.Hostile => 20,
+        SpaceHappening.Nothing => 80
+      ]);
+    }
     return AugRandom.weightedChoice([
       SpaceHappening.Nothing => 25,
       SpaceHappening.Item => 15,
@@ -71,18 +102,22 @@ class CoreSectorGenerator extends SectorGenerator
           space.item = new Item(good, AugRandom.range(1, 3));
         }
       case Friendly:
+        /*
         space.encounter = Generator.generateEncounter(AugRandom.weightedChoice([
           EncounterType.Librarian => 50,
           EncounterType.Trader => 50
         ]));
+        */
       case Hostile:
-        space.encounter = new Encounter(EncounterType.Pirate, "Pirate", "Your ship is beset by pirates!");
+        space.encounter = new Pirate(1, 2);
       case Quest:
+        /*
         space.encounter = Generator.generateEncounter(AugRandom.weightedChoice([
           EncounterType.Astronomer => 40,
           EncounterType.Terraformer => 30,
           EncounterType.Scientist => 30
         ]));
+        */
     }
   }
 }

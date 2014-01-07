@@ -4,4 +4,5 @@ enum SpaceType {
   Star;
   Planet;
   Voidness;
+  SpaceStation;
 }

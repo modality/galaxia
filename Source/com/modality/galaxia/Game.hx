@@ -8,10 +8,6 @@ class Game
 
   public var turnNumber:Int;
   public var sm:SectorMenu;
-  public var unknownSectors:Array<Sector>;
-  public var outerSectors:Array<Sector>;
-  public var innerSectors:Array<Sector>;
-  public var coreSectors:Array<Sector>;
 
   public var attack:Int;
   public var shields:Int;
@@ -38,19 +34,7 @@ class Game
     attack = 1;
     fuel = Constants.STARTING_FUEL;
 
-    unknownSectors = new Array<Sector>();
-    outerSectors = new Array<Sector>();
-    innerSectors = new Array<Sector>();
-    coreSectors = new Array<Sector>();
-
     inventory = new Array<Item>();
-
-    for(i in 0...5) {
-      unknownSectors.push(new Sector(SectorType.Unknown));
-      outerSectors.push(new Sector(SectorType.OuterRim));
-      innerSectors.push(new Sector(SectorType.InnerRim));
-      coreSectors.push(new Sector(SectorType.Core));
-    }
   }
 
   public function setSectorMenu(_sm:SectorMenu):Void
@@ -60,14 +44,17 @@ class Game
 
   public function goToMenu():Void
   {
+    /*
     piratesHeal();
     HXP.scene = sm;
     useFuel(2);
     updateMenu();
+    */
   }
 
   public function goToSector(name:String):Void
   {
+    /*
     var sectorType:String = name.split("_")[0];
     var sectorNum:Int = Std.parseInt(name.split("_")[1]);
 
@@ -82,21 +69,12 @@ class Game
         HXP.scene = coreSectors[sectorNum-1];
     }
     updateMenu();
+    */
   }
 
-  public function addEncounter(_enc:Encounter):Void
-  {
-    var menu:Array<GameMenu> = new Array<GameMenu>();
-    HXP.scene.getType("game_menu", menu);
-
-    menu[0].addEncounter(_enc);
-  }
 
   public function addItem(_item:Item):Void
   {
-    var menu:Array<GameMenu> = new Array<GameMenu>();
-    HXP.scene.getType("game_menu", menu);
-
     if(_item.name == "Fuel") {
       fuel += _item.amount;
     } else {
@@ -113,13 +91,13 @@ class Game
         inventory.push(item);
       }
     }
-    menu[0].updateGraphic();
   }
 
   public function pulse():Void
   {
     if(HXP.scene != sm) {
       piratesAttack();
+      cast(HXP.scene, Sector).checkLocked();
     }
     updateMenu();
     turnNumber++;
@@ -149,6 +127,7 @@ class Game
 
   public function piratesAttack():Void
   {
+    /*
     var sector:Sector = cast(HXP.scene, Sector);
     sector.grid.each(function(s:Space, i:Int, j:Int):Void {
       if(s.explored) {
@@ -160,6 +139,7 @@ class Game
         }
       }
     });
+    */
   }
 
   public function piratesHeal():Void
@@ -173,22 +153,6 @@ class Game
         }
       }
     });
-  }
-
-  public function sellItem(_item:Item):Void
-  {
-    var itemValue:Int = 0;
-    if(_item.name == Generator.commonGood.name) {
-      itemValue = _item.amount; 
-    } else if(_item.name == Generator.uncommonGood.name) {
-      itemValue = _item.amount * 2;
-    } else if(_item.name == Generator.rareGood.name) {
-      itemValue = _item.amount * 3;
-    }
-
-    fuel += itemValue;
-    inventory.remove(_item);
-    updateMenu();
   }
 
   public function useFuel(howMuch:Int):Void
@@ -237,6 +201,10 @@ class Game
   public function attackPirate(pirate:Pirate):Void
   {
     pirate.takeDamage(attack);
+    // retaliation
+    if(pirate.health > 0 && pirate.turnUncovered < turnNumber) {
+      takeDamage(pirate.attack);
+    }
     pulse();
   }
 }

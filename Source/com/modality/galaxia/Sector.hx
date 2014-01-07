@@ -10,6 +10,7 @@ import com.haxepunk.utils.Ease;
 import com.haxepunk.Tween;
 import com.haxepunk.tweens.misc.VarTween;
 
+import com.modality.aug.AugRandom;
 import com.modality.aug.Grid;
 import com.modality.aug.Base;
 
@@ -19,7 +20,6 @@ class Sector extends Scene
   public var sectorType:SectorType;
   public var name:String;
   public var gameMenu:GameMenu;
-  public var tradeMenu:TradeMenu;
   public var anyExplored:Bool;
   public var nebulaMapped:Bool;
   public var nebulaEnt:Base;
@@ -32,7 +32,6 @@ class Sector extends Scene
     nebulaMapped = false;
     name = Generator.generateSectorName();
     gameMenu = new GameMenu();
-    tradeMenu = new TradeMenu();
 
     add(gameMenu);
 
@@ -45,12 +44,23 @@ class Sector extends Scene
     var spaces:Array<Space> = Generator.generateSectorSpaces(sectorType);
     grid = new Grid<Space>(Constants.GRID_X, Constants.GRID_Y, Constants.GRID_W, Constants.GRID_H, function(i:Int, j:Int):Space {
       var space:Space = spaces.shift();
+      space.grid = grid;
       space.x = Constants.GRID_X+(i*Constants.BLOCK_W);
       space.y = Constants.GRID_Y+(j*Constants.BLOCK_H);
       space.updateGraphic();
       add(space);
       return space;
     });
+
+    var voids:Array<Space> = grid.filter(function(s:Space, i:Int, j:Int):Bool {
+      return s.spaceType == SpaceType.Voidness;
+    });
+
+    var stationSpace:Space = voids.splice(AugRandom.range(0, voids.length), 1)[0];
+    stationSpace.spaceType = SpaceType.SpaceStation;
+    stationSpace.explored = true;
+    anyExplored = true;
+    stationSpace.updateGraphic();
   }
 
   public override function begin():Void
@@ -87,18 +97,6 @@ class Sector extends Scene
         return;
       }
 
-      button = cast(collidePoint("tradeMenuCloseBtn", Input.mouseX, Input.mouseY), Base);
-      if(button != null) {
-        hideTradeMenu();
-        return;
-      }
-
-      button = cast(collidePoint("inventorySellBtn", Input.mouseX, Input.mouseY), Base);
-      if(button != null) {
-        button.dispatchEvent(new Event("onClick"));
-        return;
-      }
-
       var ent:Space = cast(collidePoint("space", Input.mouseX, Input.mouseY), Space);
 
       if(ent != null && canExplore(ent)) {
@@ -111,30 +109,43 @@ class Sector extends Scene
             showSectorExplored();
           }
         }
+        if(ent.encounter != null && ent.encounter.encounterType == EncounterType.Pirate) {
+          checkLocked();
+        }
       } else if(ent != null && ent.explored && ent.encounter != null) {
         switch(ent.encounter.encounterType) {
           case Pirate:
             Game.instance.attackPirate(cast(ent.encounter, Pirate));
-            return;
-          case Trader:
-            showTradeMenu();
+            checkLocked();
             return;
           default:
         }
       }
-
-      var emi:EncounterMenuItem = cast(collidePoint("encounter", Input.mouseX, Input.mouseY), EncounterMenuItem);
-      if(emi != null) {
-        if(Std.is(emi, PirateMenuItem)) {
-          Game.instance.attackPirate(cast(emi, PirateMenuItem).pirate);
-        } else if(Std.is(emi, TradeMenuItem)) {
-          showTradeMenu();
-        }
-      }
-
     } else if (Input.pressed(Key.ESCAPE)) {
       Game.instance.goToMenu();
+    } else if (Input.pressed(Key.F)) {
+      grid.each(function(s:Space, i:Int, j:Int):Void {
+        s.explore();
+      });
     }
+  }
+
+  public function checkLocked():Void
+  {
+    grid.each(function(s:Space, i:Int, j:Int):Void {
+      if(!s.explored) {
+        s.locked = false;
+        for(u in i-1...i+2) {
+          for(v in j-1...j+2) {
+            var nayb = grid.get(u, v);
+            if(nayb != null && nayb.explored && nayb.encounter != null && nayb.encounter.encounterType == EncounterType.Pirate) {
+              s.locked = true;
+            }
+          }
+        }
+        s.updateGraphic();
+      }
+    });
   }
 
   public function checkNebula():Void
@@ -174,16 +185,6 @@ class Sector extends Scene
     ent.addTween(vt, true);
   }
 
-  public function showTradeMenu():Void
-  {
-    add(tradeMenu);
-  }
-
-  public function hideTradeMenu():Void
-  {
-    remove(tradeMenu);
-  }
-
   public function removeEncounter(_enc:Encounter):Void
   {
     grid.each(function(s:Space, i:Int, j:Int):Void {
@@ -191,12 +192,12 @@ class Sector extends Scene
         s.encounter = null;
       }
     });
-    gameMenu.removeEncounter(_enc);
   }
 
   public function canExplore(space:Space):Bool
   {
     if(space.explored) return false;
+    if(space.locked) return false;
     if(!anyExplored) return true;
 
     var s:Space;

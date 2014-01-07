@@ -12,8 +12,6 @@ class GameMenu extends Base
   public var fuelGauge:TextBase;
   public var galaxyMapBtn:TextBase;
   public var regenShieldBtn:TextBase;
-  public var items:Array<InventoryMenuItem>;
-  public var encounters:Array<EncounterMenuItem>;
   public var galaxyMap:Bool;
 
   public function new(_galaxyMap:Bool = false)
@@ -21,8 +19,6 @@ class GameMenu extends Base
     super(0, 0);
     galaxyMap = _galaxyMap;
     type = "game_menu";
-    items = new Array<InventoryMenuItem>();
-    encounters = new Array<EncounterMenuItem>();
     this.graphic = new Image(new BitmapData(300, Constants.SCREEN_H, false, Constants.COLOR_MENU));
   }
 
@@ -47,11 +43,6 @@ class GameMenu extends Base
     fuelGauge.text.color = Constants.COLOR_FUEL;
     scene.add(fuelGauge);
 
-    ent = new TextBase("Inventory");
-    ent.x = x;
-    ent.y = y+160;
-    scene.add(ent);
-
     if(!galaxyMap) {
       galaxyMapBtn = new TextBase("Back to Galaxy\n(2 fuel)");
       galaxyMapBtn.x = x+120;
@@ -71,58 +62,6 @@ class GameMenu extends Base
     updateGraphic();
   }
 
-  public function addEncounter(_enc:Encounter):Void
-  {
-    if(_enc.encounterType != EncounterType.Pirate) {
-      for(emi in encounters) {
-        if(emi.handlesEncounter(_enc)) {
-          emi.addEncounter(_enc);
-          layoutMenu();
-          return;
-        }
-      }
-    }
-
-    var emi:EncounterMenuItem;
-
-    switch(_enc.encounterType) {
-      case Pirate:
-        emi = new PirateMenuItem(cast(_enc, Pirate));
-      case Librarian, Trader:
-        emi = new TradeMenuItem(_enc);
-      case Scientist, Terraformer, Astronomer:
-        emi = new QuestMenuItem(_enc);
-    }
-
-    encounters.push(emi);
-    scene.add(emi);
-    layoutMenu();
-  }
-
-  public function removeEncounter(_enc:Encounter):Void
-  {
-    var emiToRemove:EncounterMenuItem = null;
-    for(emi in encounters) {
-      if(emi.hasEncounter(_enc)) {
-        scene.remove(emi);
-        emiToRemove = emi;
-      }
-    }
-    if(emiToRemove != null) {
-      encounters.remove(emiToRemove);
-    }
-    layoutMenu();
-  }
-
-  public function getEncounter(_enc:Encounter):EncounterMenuItem
-  {
-    for(emi in encounters) {
-      if(emi.hasEncounter(_enc)) {
-        return emi; 
-      }
-    }
-    return null;
-  }
 
   public function updateGraphic():Void
   {
@@ -138,42 +77,6 @@ class GameMenu extends Base
     }
 
     shipDisplay.updateGraphic();
-    for(imi in items) {
-      scene.remove(imi);
-    }
-    items = new Array<InventoryMenuItem>();
-    for(item in Game.instance.inventory) {
-      if(item == null) {
-        trace("null item!");
-      } else {
-        var imi:InventoryMenuItem = new InventoryMenuItem(item);
-        items.push(imi);
-        scene.add(imi);
-      }
-    }
-    for(emi in encounters) {
-      emi.updateGraphic();
-    }
-    layoutMenu();
   }
 
-  public function layoutMenu():Void
-  {
-    var inventory_y:Int = 180;
-
-    for(imi in items) {
-      imi.x = this.x;
-      imi.y = this.y + inventory_y;
-      inventory_y += 20;
-    }
-
-    inventory_y += 20;
-
-    for(emi in encounters) {
-      emi.x = this.x;
-      emi.y = this.y + inventory_y;
-      emi.updateGraphic();
-      inventory_y += 50;
-    }
-  }
 }

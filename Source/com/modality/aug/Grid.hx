@@ -10,13 +10,14 @@ class Grid<T:(Block)>
 
   public var blocks:Array<Array<T>>;
 
-  public function new(_x:Int, _y:Int, _width:Int, _height:Int, createFn:Int->Int->T)
+  public function new(_x:Int, _y:Int, _width:Int, _height:Int, _createFn:Int->Int->T)
   {
     x = _x;
     y = _y;
     width = _width;
     height = _height;
     blocks = [];
+    createFn = _createFn;
     for(j in 0...height) {
       var rowArray:Array<T> = []; 
       for(i in 0...width) {
@@ -85,5 +86,18 @@ class Grid<T:(Block)>
       }
     }
     return mapped;
+  }
+
+  public function filter(fn:T->Int->Int->Bool):Array<T>
+  {
+    var match:Array<T> = [];
+    for(j in 0...height) {
+      for(i in 0...width) {
+        if(fn(get(i, j), i, j)) {
+          match.push(get(i, j));
+        }
+      }
+    }
+    return match;
   }
 }

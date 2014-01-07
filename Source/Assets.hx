@@ -9,7 +9,9 @@ class Assets
   public static var STAR_ICON;
   public static var PLANET_ICON;
   public static var UNEXPLORED_ICON;
+  public static var UNEXPLORED_LOCKED_ICON;
   public static var VOID_ICON;
+  public static var SPACE_BASE;
 
   public static var TERRAFORMER_ICON;
   public static var SCIENTIST_ICON;
@@ -37,7 +39,9 @@ class Assets
     STAR_ICON = "assets/star.png";
     PLANET_ICON = "assets/planet.png";
     UNEXPLORED_ICON = "assets/unexplored.png";
+    UNEXPLORED_LOCKED_ICON = "assets/unexplored_locked.png";
     VOID_ICON = "assets/void.png";
+    SPACE_BASE = "assets/space_base.png";
 
     TERRAFORMER_ICON = "assets/terraformer.png";
     SCIENTIST_ICON = "assets/scientist.png";

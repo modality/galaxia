@@ -2,12 +2,15 @@ package com.modality.galaxia;
 
 import com.haxepunk.graphics.Image;
 import com.modality.aug.Block;
+import com.modality.aug.Grid;
 
 class Space extends Block
 {
+  public var grid:Grid<Space>;
   public var spaceType:SpaceType;
   public var explored:Bool = false;
   public var onNebula:Bool = false;
+  public var locked:Bool = false;
   public var encounter:Encounter;
   public var item:Item;
   public var description:String;
@@ -18,6 +21,7 @@ class Space extends Block
     type = "space";
     layer = Constants.UNEXPLORED_LAYER;
     spaceType = SpaceType.Voidness;
+    locked = false;
   }
 
   public override function added():Void
@@ -37,7 +41,6 @@ class Space extends Block
       updateGraphic();
       if(encounter != null) {
         encounter.updateGraphic();
-        Game.instance.addEncounter(encounter);
         if(encounter.encounterType == EncounterType.Pirate) {
           cast(encounter, Pirate).turnUncovered = Game.instance.turnNumber;
         }
@@ -61,9 +64,15 @@ class Space extends Block
             graphic = new Image(Assets.STAR_ICON);
           case Planet:
             graphic = new Image(Assets.PLANET_ICON);
+          case SpaceStation:
+            graphic = new Image(Assets.SPACE_BASE);
         }
       } else {
-        graphic = new Image(Assets.UNEXPLORED_ICON);
+        if(!locked) {
+          graphic = new Image(Assets.UNEXPLORED_ICON);
+        } else {
+          graphic = new Image(Assets.UNEXPLORED_LOCKED_ICON);
+        }
       }
     } else if (type == "sector") {
       if(explored) {

@@ -3,8 +3,8 @@ package com.modality.galaxia;
 class Constants
 {
   //s 5, 16, 24, 48 and 72 p
-  public static var FONT_SIZE_LG:Int = 16;
-  public static var FONT_SIZE_SM:Int = 8;
+  public static var FONT_SIZE_LG:Int = 24;
+  public static var FONT_SIZE_SM:Int = 16;
 
   public static var COLOR_FUEL:Int = 0xFFB300;
   public static var COLOR_ENEMY:Int = 0xFF4000;

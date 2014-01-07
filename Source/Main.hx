@@ -2,7 +2,8 @@ import flash.display.StageAlign;
 import flash.display.StageScaleMode;
 import com.haxepunk.Engine;
 import com.haxepunk.HXP;
-import com.modality.galaxia.SectorMenu;
+import com.modality.galaxia.Sector;
+import com.modality.galaxia.SectorType;
 import com.modality.galaxia.Game;
 import com.modality.aug.AugTime;
 import com.modality.galaxia.Generator;
@@ -28,7 +29,7 @@ class Main extends Engine
     HXP.screen.color = Constants.COLOR_BG;
 #end
     
-    HXP.scene = new SectorMenu();
+    HXP.scene = new Sector(SectorType.Core); //SectorMenu();
 
     // STATISTICS OUTPUT
     //Generator.init();
