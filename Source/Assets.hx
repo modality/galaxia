@@ -12,6 +12,7 @@ class Assets
   public static var UNEXPLORED_LOCKED_ICON;
   public static var VOID_ICON;
   public static var SPACE_BASE;
+  public static var SPACESHIP;
 
   public static var TERRAFORMER_ICON;
   public static var SCIENTIST_ICON;
@@ -30,6 +31,8 @@ class Assets
 
   public static var STAR_FONT;
 
+  public static var GAME_MENU;
+
   public static function init()
   {
     SECTOR_SELECT = "assets/sector_select.png";
@@ -42,6 +45,7 @@ class Assets
     UNEXPLORED_LOCKED_ICON = "assets/unexplored_locked.png";
     VOID_ICON = "assets/void.png";
     SPACE_BASE = "assets/space_base.png";
+    SPACESHIP = "assets/spazeship.png";
 
     TERRAFORMER_ICON = "assets/terraformer.png";
     SCIENTIST_ICON = "assets/scientist.png";
@@ -58,7 +62,8 @@ class Assets
     MENU_PANEL = "assets/menu_panel.png";
     SECTOR_MAPPED = "assets/sector_mapped.png";
 
-    STAR_FONT = "assets/CasualEncounter.ttf";
+    STAR_FONT = "assets/Labtop.ttf";
+    GAME_MENU = "assets/galaxia_menu.png";
   }
 
 }

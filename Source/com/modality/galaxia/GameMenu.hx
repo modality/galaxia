@@ -8,56 +8,53 @@ import com.modality.aug.Base;
 
 class GameMenu extends Base
 {
-  public var shipDisplay:ShipMenuItem;
-  public var fuelGauge:TextBase;
+  public var shields:TextBase;
+  public var hull:TextBase;
+  public var fuel:TextBase;
   public var galaxyMapBtn:TextBase;
   public var regenShieldBtn:TextBase;
   public var galaxyMap:Bool;
+
+  public var menuPanel:Base;
 
   public function new(_galaxyMap:Bool = false)
   {
     super(0, 0);
     galaxyMap = _galaxyMap;
     type = "game_menu";
-    this.graphic = new Image(new BitmapData(300, Constants.SCREEN_H, false, Constants.COLOR_MENU));
+    this.graphic = new Image(Assets.GAME_MENU);
   }
 
   public override function added()
   {
     var ent:TextBase;
 
-    ent = new TextBase("GALAXIA");
-    ent.x = x+20;
-    ent.y = y+10;
-    ent.text.size = Constants.FONT_SIZE_LG;
-    scene.add(ent);
+    shields = new TextBase("shields");
+    shields.x = x+12;
+    shields.y = y+370;
+    shields.text.color = Constants.COLOR_ACTIVE_1;
+    scene.add(shields);
 
-    shipDisplay = new ShipMenuItem();
-    shipDisplay.x = x;
-    shipDisplay.y = y+40;
-    scene.add(shipDisplay);
+    hull = new TextBase("hull");
+    hull.x = x+12;
+    hull.y = y+400;
+    hull.text.color = Constants.COLOR_ACCENT_2;
+    scene.add(hull);
 
-    fuelGauge = new TextBase("Fuel: "+Game.instance.fuel);
-    fuelGauge.x = x;
-    fuelGauge.y = y+120;
-    fuelGauge.text.color = Constants.COLOR_FUEL;
-    scene.add(fuelGauge);
+    fuel = new TextBase("fuel");
+    fuel.x = x+12;
+    fuel.y = y+430;
+    fuel.text.color = Constants.COLOR_ACCENT_3;
+    scene.add(fuel);
 
-    if(!galaxyMap) {
-      galaxyMapBtn = new TextBase("Back to Galaxy\n(2 fuel)");
-      galaxyMapBtn.x = x+120;
-      galaxyMapBtn.y = y+40;
-      galaxyMapBtn.text.color = 0xFF0000;
-      galaxyMapBtn.type = "galaxyMapBtn";
-      scene.add(galaxyMapBtn);
-    }
-
-    regenShieldBtn = new TextBase("Restore Shields\n(0 fuel)");
-    regenShieldBtn.x = x+120;
-    regenShieldBtn.y = y+80;
-    regenShieldBtn.text.color = 0xCCCCCC;
-    regenShieldBtn.type = "regenShieldBtn";
-    scene.add(regenShieldBtn);
+    /*
+    menuPanel = new Base();
+    menuPanel.x = Constants.GRID_X;
+    menuPanel.y = Constants.GRID_Y;
+    menuPanel.graphic = new Image(Assets.MENU_PANEL);
+    menuPanel.layer = Constants.OVERLAY_LAYER;
+    scene.add(menuPanel);
+    */
 
     updateGraphic();
   }
@@ -65,18 +62,9 @@ class GameMenu extends Base
 
   public function updateGraphic():Void
   {
-    fuelGauge.text.text = "Fuel: "+Game.instance.fuel;
-
-    if(Game.instance.shields < Game.instance.maxShields) {
-      var shieldFuel = Game.instance.maxShields - Game.instance.shields;
-      regenShieldBtn.text.text = "Restore Shields\n("+shieldFuel+" fuel)";
-      regenShieldBtn.text.color = 0x00FFFF;
-    } else {
-      regenShieldBtn.text.text = "Restore Shields\n(0 fuel)";
-      regenShieldBtn.text.color = 0xCCCCCC;
-    }
-
-    shipDisplay.updateGraphic();
+    shields.text.text = "Shields: "+Game.player.shields+"/"+Game.player.maxShields;
+    hull.text.text = "Hull: "+Game.player.hull+"/"+Game.player.maxHull;
+    fuel.text.text = "Fuel: "+Game.player.fuel;
   }
 
 }

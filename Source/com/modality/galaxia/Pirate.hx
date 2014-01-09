@@ -16,8 +16,8 @@ import com.modality.aug.Base;
 class Pirate extends Encounter
 {
   public var turnUncovered:Int;
-  public var attack:Int;
-  public var health:Int;
+  public var attack:Float;
+  public var health:Float;
   public var maxHealth:Int;
   public var emitter:Emitter;
   public var emitter_entity:Entity;
@@ -42,7 +42,7 @@ class Pirate extends Encounter
     emitter.setMotion("smoke", 0, 10, 7, 360, 5, 7);
   }
   
-  public function takeDamage(howMuch:Int):Void
+  public function takeDamage(howMuch:Float):Void
   {
     var s:Sector = cast(HXP.scene, Sector);
     health -= howMuch;

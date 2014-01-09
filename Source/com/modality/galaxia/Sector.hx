@@ -20,7 +20,6 @@ class Sector extends Scene
   public var sectorType:SectorType;
   public var name:String;
   public var gameMenu:GameMenu;
-  public var anyExplored:Bool;
   public var nebulaMapped:Bool;
   public var nebulaEnt:Base;
 
@@ -28,17 +27,18 @@ class Sector extends Scene
   {
     super();
     sectorType = _st;
-    anyExplored = false;
     nebulaMapped = false;
     name = Generator.generateSectorName();
     gameMenu = new GameMenu();
 
     add(gameMenu);
 
-    var ent:TextBase = new TextBase(name);
+    var ent:TextBase = new TextBase("sector "+name.toUpperCase());
     ent.text.size = Constants.FONT_SIZE_LG;
+    ent.text.font = Assets.STAR_FONT;
+    //ent.text.scale = 0.6;
     ent.x = Constants.GRID_X;
-    ent.y = 10;
+    ent.y = 6;
     add(ent);
 
     var spaces:Array<Space> = Generator.generateSectorSpaces(sectorType);
@@ -51,16 +51,20 @@ class Sector extends Scene
       add(space);
       return space;
     });
+    grid.each(function(space:Space, i:Int, j:Int) {
+      space.grid = grid;
+    });
 
     var voids:Array<Space> = grid.filter(function(s:Space, i:Int, j:Int):Bool {
-      return s.spaceType == SpaceType.Voidness;
+      return s.spaceType == SpaceType.Voidness && i != 0 && i <= (Constants.GRID_W-1) && j != 0 && j != (Constants.GRID_H-1);
     });
 
     var stationSpace:Space = voids.splice(AugRandom.range(0, voids.length), 1)[0];
     stationSpace.spaceType = SpaceType.SpaceStation;
     stationSpace.explored = true;
-    anyExplored = true;
     stationSpace.updateGraphic();
+
+    Game.instance.currentSpace = stationSpace;
   }
 
   public override function begin():Void
@@ -77,50 +81,20 @@ class Sector extends Scene
         s.onNebula = nebula.grid[i][j];
       });
     }
+    add(Game.instance.ship);
+    Game.instance.updateShipPosition();
   }
 
   public override function update():Void
   {
     super.update();
     if(Input.mouseReleased) {
-      var button:Base;
+      var space:Space = cast(collidePoint("space", Input.mouseX, Input.mouseY), Space);
 
-      button = cast(collidePoint("galaxyMapBtn", Input.mouseX, Input.mouseY), Base);
-      if(button != null) {
-        Game.instance.goToMenu();
-        return;
+      if(space != null) {
+        Game.instance.moveTo(space);
       }
 
-      button = cast(collidePoint("regenShieldBtn", Input.mouseX, Input.mouseY), Base);
-      if(button != null) {
-        Game.instance.restoreShields();
-        return;
-      }
-
-      var ent:Space = cast(collidePoint("space", Input.mouseX, Input.mouseY), Space);
-
-      if(ent != null && canExplore(ent)) {
-        ent.explore();
-        anyExplored = true;
-        if(ent.onNebula) {
-          checkNebula();
-          if(nebulaMapped) {
-            Game.instance.exploreSector();
-            showSectorExplored();
-          }
-        }
-        if(ent.encounter != null && ent.encounter.encounterType == EncounterType.Pirate) {
-          checkLocked();
-        }
-      } else if(ent != null && ent.explored && ent.encounter != null) {
-        switch(ent.encounter.encounterType) {
-          case Pirate:
-            Game.instance.attackPirate(cast(ent.encounter, Pirate));
-            checkLocked();
-            return;
-          default:
-        }
-      }
     } else if (Input.pressed(Key.ESCAPE)) {
       Game.instance.goToMenu();
     } else if (Input.pressed(Key.F)) {
@@ -130,38 +104,6 @@ class Sector extends Scene
     }
   }
 
-  public function checkLocked():Void
-  {
-    grid.each(function(s:Space, i:Int, j:Int):Void {
-      if(!s.explored) {
-        s.locked = false;
-        for(u in i-1...i+2) {
-          for(v in j-1...j+2) {
-            var nayb = grid.get(u, v);
-            if(nayb != null && nayb.explored && nayb.encounter != null && nayb.encounter.encounterType == EncounterType.Pirate) {
-              s.locked = true;
-            }
-          }
-        }
-        s.updateGraphic();
-      }
-    });
-  }
-
-  public function checkNebula():Void
-  {
-    var _nebulaMapped:Bool = true;
-    var nebsLeft:Int = 0;
-
-    grid.each(function(s:Space, i:Int, j:Int):Void {
-      if(s.onNebula && !s.explored) {
-        _nebulaMapped = false;
-        nebsLeft++;
-      }
-    });
-
-    nebulaMapped = _nebulaMapped;
-  }
 
   public function showSectorExplored():Void
   {
@@ -194,22 +136,4 @@ class Sector extends Scene
     });
   }
 
-  public function canExplore(space:Space):Bool
-  {
-    if(space.explored) return false;
-    if(space.locked) return false;
-    if(!anyExplored) return true;
-
-    var s:Space;
-    s = grid.get(space.x_index-1, space.y_index);
-    if(s != null && s.explored) return true;
-    s = grid.get(space.x_index+1, space.y_index);
-    if(s != null && s.explored) return true;
-    s = grid.get(space.x_index, space.y_index-1);
-    if(s != null && s.explored) return true;
-    s = grid.get(space.x_index, space.y_index+1);
-    if(s != null && s.explored) return true;
-
-    return false;
-  }
 }
