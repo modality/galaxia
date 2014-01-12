@@ -1,5 +1,6 @@
 package com.modality.galaxia;
 
+import com.haxepunk.HXP;
 import com.haxepunk.Tween;
 import com.haxepunk.graphics.Image;
 import com.haxepunk.tweens.misc.MultiVarTween;
@@ -77,23 +78,25 @@ class Ship extends Base
     } else {
       shields -= howMuch;
     }
+    shields = HXP.round(shields, 1);
   }
 
-  public function stepCombat():Void
+  public function step(doEnergy:Bool, doFuel:Bool):Void
   {
-    pushEnergy();
-    pullEnergy();
+    if(doEnergy) {
+      pushEnergy();
+      pullEnergy();
+    }
+
     shields += shieldRegen;
     if(shields > maxShields) shields = maxShields;
-  }
+    shields = HXP.round(shields, 1);
 
-  public function stepExplore():Void
-  {
-    shields += shieldRegen;
-    if(shields > maxShields) shields = maxShields;
-
-    fuel -= fuelUse;
-    if(fuel <= 0) fuel = 0;
+    if(doFuel) {
+      fuel -= fuelUse;
+      if(fuel <= 0) fuel = 0;
+    }
+    fuel = HXP.round(fuel, 1);
   }
 
   public function pushEnergy():Void
@@ -102,17 +105,18 @@ class Ship extends Base
       var shieldDelta:Int = shieldEnergySetting - shieldEnergy,
           engineDelta:Int = engineEnergySetting - engineEnergy,
           weaponDelta:Int = weaponEnergySetting - weaponEnergy;
+      var rate:Int;
 
       if(shieldDelta > 0 && shieldDelta > engineDelta && shieldDelta > weaponDelta) {
-        var rate = Std.int(Math.min(Math.min(shieldDelta, energyXferRate), freeEnergy));
+        rate = Std.int(Math.min(Math.min(shieldDelta, energyXferRate), freeEnergy));
         shieldEnergy += rate;
         freeEnergy -= rate;
       } else if(engineDelta > 0 && engineDelta > weaponDelta) {
-        var rate = Std.int(Math.min(Math.min(engineDelta, energyXferRate), freeEnergy));
+        rate = Std.int(Math.min(Math.min(engineDelta, energyXferRate), freeEnergy));
         engineEnergy += rate;
         freeEnergy -= rate;
       } else if(weaponDelta > 0) {
-        var rate = Std.int(Math.min(Math.min(weaponDelta, energyXferRate), freeEnergy));
+        rate = Std.int(Math.min(Math.min(weaponDelta, energyXferRate), freeEnergy));
         weaponEnergy += rate;
         freeEnergy -= rate;
       }
@@ -164,21 +168,21 @@ class Ship extends Base
   private function get_attack():Float
   {
     if(weaponEnergy == 0) return 0;
-    return 1 + ((weaponEnergy - 1) * 0.2);
+    return HXP.round(1 + ((weaponEnergy - 1) * 0.2), 1);
   }
 
   private function get_fuelUse():Float
   {
-    return Math.max(0, 1 - (engineEnergy * 0.1));
+    return HXP.round(Math.max(0, 1 - (engineEnergy * 0.1)), 1);
   }
 
   private function get_damageEvasion():Float
   {
-    return engineEnergy * 0.1;
+    return HXP.round(engineEnergy * 0.1, 1);
   }
 
   private function get_shieldRegen():Float
   {
-    return shieldEnergy * 0.2;
+    return HXP.round(shieldEnergy * 0.2, 1);
   }
 }

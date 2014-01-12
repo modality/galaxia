@@ -35,7 +35,7 @@ class Sector extends Scene
 
     var ent:TextBase = new TextBase("sector "+name.toUpperCase());
     ent.text.size = Constants.FONT_SIZE_LG;
-    ent.text.font = Assets.STAR_FONT;
+    ent.text.font = Assets.FONT_ITALIC;
     //ent.text.scale = 0.6;
     ent.x = Constants.GRID_X;
     ent.y = 6;
@@ -56,7 +56,7 @@ class Sector extends Scene
     });
 
     var voids:Array<Space> = grid.filter(function(s:Space, i:Int, j:Int):Bool {
-      return s.spaceType == SpaceType.Voidness && i != 0 && i <= (Constants.GRID_W-1) && j != 0 && j != (Constants.GRID_H-1);
+      return s.spaceType == SpaceType.Voidness && i != 0 && i <= (Constants.GRID_W-1) && j != 0 && j != (Constants.GRID_H-1) && s.encounter == null;
     });
 
     var stationSpace:Space = voids.splice(AugRandom.range(0, voids.length), 1)[0];
@@ -90,11 +90,9 @@ class Sector extends Scene
     super.update();
     if(Input.mouseReleased) {
       var space:Space = cast(collidePoint("space", Input.mouseX, Input.mouseY), Space);
-
       if(space != null) {
         Game.instance.moveTo(space);
       }
-
     } else if (Input.pressed(Key.ESCAPE)) {
       Game.instance.goToMenu();
     } else if (Input.pressed(Key.F)) {

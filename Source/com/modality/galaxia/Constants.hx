@@ -3,8 +3,10 @@ package com.modality.galaxia;
 class Constants
 {
   //s 5, 16, 24, 48 and 72 p
-  public static var FONT_SIZE_LG:Int = 48;
+  public static var FONT_SIZE_LG:Int = 32;
+  public static var FONT_SIZE_MD:Int = 24;
   public static var FONT_SIZE_SM:Int = 16;
+  public static var FONT_SIZE_XS:Int = 12;
 
   public static var COLOR_FUEL:Int = 0xFFB300;
   public static var COLOR_ENEMY:Int = 0xFF4000;
@@ -35,4 +37,11 @@ class Constants
   public static var ENCOUNTER_LAYER:Int = 2;
   public static var EFFECTS_LAYER:Int = 1;
   public static var OVERLAY_LAYER:Int = 0;
+
+  public static var MENU_LAYER:Int = 5;
+  public static var SLOT_LAYER:Int = 4;
+  public static var ENERGY_LAYER:Int = 3;
+  public static var DRAIN_LAYER:Int = 2;
+  public static var BLOOM_LAYER:Int = 1;
+
 }

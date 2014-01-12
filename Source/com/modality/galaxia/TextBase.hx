@@ -11,6 +11,7 @@ class TextBase extends Base
   {
     super();
     text = new Text(_str, 0, 0, 0, 0, {
+      font: Assets.FONT,
       size: Constants.FONT_SIZE_SM,
       color: 0xFFFFFF
     });

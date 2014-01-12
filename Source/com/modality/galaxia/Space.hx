@@ -49,7 +49,6 @@ class Space extends Block
         Game.instance.addItem(item);
         item = null;
       }
-      Game.instance.explored();
     }
   }
 

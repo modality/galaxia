@@ -14,6 +14,8 @@ class Base extends Entity implements IEventDispatcher
 {
   private var _dispatcher:EventDispatcher;
 
+  public var alpha(get, set):Float;
+
   public function new(x:Float = 0, y:Float = 0, graphic:Graphic = null, mask:Mask = null)
   {
     super(x, y, graphic, mask);
@@ -45,9 +47,15 @@ class Base extends Entity implements IEventDispatcher
     return _dispatcher.willTrigger(type);
   }
 
-  public function setAlpha(alpha:Float):Void
+  public function get_alpha():Float
+  {
+    return cast(this.graphic, Image).alpha;
+  }
+
+  public function set_alpha(alpha:Float):Float
   {
     cast(this.graphic, Image).alpha = alpha;
+    return alpha;
   }
 }
 

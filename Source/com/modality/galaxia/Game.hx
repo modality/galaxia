@@ -92,71 +92,86 @@ class Game
   {
     var grid:Grid<Space> = space.grid;
 
-    if(!inCombat && canExplore(space)) {
-      space.explore();
-      var e:AStar = new AStar();
-      e.generateMap(grid.width, grid.height);
-      e.eachNode(function(n:Node):Void {
-        if(n.x == currentSpace.x_index && n.y == currentSpace.y_index) {
-          n.setTypeByText("START_NODE");
-        } else if(n.x == space.x_index && n.y == space.y_index) {
-          n.setTypeByText("END_NODE");
-        } else if(!grid.get(n.x, n.y).explored) {
-          n.setTypeByText("BREAK_NODE");
-        }
-      });
+    if(!space.explored && !canExplore(space)) return;
 
-      var nodes:Array<Node> = e.getPath();
-      
+    var e:AStar = new AStar();
+    e.generateMap(grid.width, grid.height);
+    e.eachNode(function(n:Node):Void {
+      if(n.x == currentSpace.x_index && n.y == currentSpace.y_index) {
+        n.setTypeByText("START_NODE");
+      } else if(n.x == space.x_index && n.y == space.y_index) {
+        n.setTypeByText("END_NODE");
+      } else if(!grid.get(n.x, n.y).explored) {
+        n.setTypeByText("BREAK_NODE");
+      }
+    });
+
+    var nodes:Array<Node> = e.getPath();
+    if(nodes.length == 0) return;
+
+    var turnTaken:Bool = false;
+
+    if(!inCombat) {
+      if(canExplore(space)) {
+        space.explore();
+        ship.step(false, true);
+        turnTaken = true;
+      }
       if(space.encounter != null && space.encounter.encounterType == EncounterType.Pirate) {
-        //inCombat = true;
+        inCombat = true;
         nodes.pop();
       }
       if(nodes.length > 0) {
         currentSpace = grid.get(nodes[nodes.length-1].x, nodes[nodes.length-1].y);
         ship.moveOnPath(nodes);
       }
-      
-      /*
-      e.setStartNode(e.getNode(currentSpace.x_index, currentSpace.y_index));
-      e.setEndNode(e.getNode(space.x_index, space.y_index));
-      */
-      /*
-
-        if(ent.encounter != null && ent.encounter.encounterType == EncounterType.Pirate) {
-          checkLocked();
+    } else {
+      space = grid.get(nodes[0].x, nodes[0].y);
+      turnTaken = true;
+      if(canExplore(space)) {
+        space.explore();
+        ship.step(true, true);
+        if(space.encounter != null && space.encounter.encounterType == EncounterType.Pirate) {
+          inCombat = true;
+        } else {
+          currentSpace = space;
+          ship.moveOnPath(nodes.slice(0, 1));
         }
-        Game.instance.currentSpace = ent;
-        Game.instance.updateShipPosition();
-      } else if(ent != null && ent.explored && ent.encounter != null) {
-        switch(ent.encounter.encounterType) {
-          case Pirate:
-            Game.instance.attackPirate(cast(ent.encounter, Pirate));
-            checkLocked();
-            return;
-          default:
+      } else {
+        if(space.encounter != null && space.encounter.encounterType == EncounterType.Pirate) {
+          cast(space.encounter, Pirate).takeDamage(ship.attack);
+          ship.step(true, false);
+        } else {
+          currentSpace = space;
+          ship.moveOnPath(nodes.slice(0, 1));
+          ship.step(true, true);
         }
-      }*/
+      }
     }
 
+    if(turnTaken) pulse();
   }
 
-  public function checkLocked(grid:Grid<Space>):Void
+  public function checkLocked():Void
   {
-    grid.each(function(s:Space, i:Int, j:Int):Void {
+    var foundPirate = false;
+    var sector:Sector = cast(HXP.scene, Sector);
+    sector.grid.each(function(s:Space, i:Int, j:Int):Void {
       if(!s.explored) {
         s.locked = false;
         for(u in i-1...i+2) {
           for(v in j-1...j+2) {
-            var nayb = grid.get(u, v);
+            var nayb = sector.grid.get(u, v);
             if(nayb != null && nayb.explored && nayb.encounter != null && nayb.encounter.encounterType == EncounterType.Pirate) {
               s.locked = true;
+              foundPirate = true;
             }
           }
         }
         s.updateGraphic();
       }
     });
+    inCombat = foundPirate;
   }
 
   public function canExplore(space:Space):Bool
@@ -182,18 +197,10 @@ class Game
   {
     if(HXP.scene != sm) {
       piratesAttack();
-      //cast(HXP.scene, Sector).checkLocked();
+      checkLocked();
     }
     updateMenu();
     turnNumber++;
-  }
-
-  public function explored():Void
-  {
-    if(HXP.scene != sm) {
-      //useFuel(1);
-    }
-    pulse();
   }
 
   public function updateMenu():Void
@@ -207,19 +214,17 @@ class Game
 
   public function piratesAttack():Void
   {
-    /*
     var sector:Sector = cast(HXP.scene, Sector);
     sector.grid.each(function(s:Space, i:Int, j:Int):Void {
       if(s.explored) {
         if(s.encounter != null && s.encounter.encounterType == EncounterType.Pirate) {
           var p:Pirate = cast(s.encounter, Pirate);
           if(p.health > 0 && p.turnUncovered < turnNumber) {
-            takeDamage(p.attack);
+            ship.takeDamage(p.attack);
           }
         }
       }
     });
-    */
   }
 
   public function piratesHeal():Void
@@ -233,16 +238,6 @@ class Game
         }
       }
     });
-  }
-
-  public function attackPirate(pirate:Pirate):Void
-  {
-    pirate.takeDamage(ship.attack);
-    // retaliation
-    if(pirate.health > 0 && pirate.turnUncovered < turnNumber) {
-      ship.takeDamage(pirate.attack);
-    }
-    pulse();
   }
 
   public function updateShipPosition():Void
