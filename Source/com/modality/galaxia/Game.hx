@@ -152,6 +152,20 @@ class Game
     if(turnTaken) pulse();
   }
 
+  public function modEnergy(system:String, amount:Int):Bool
+  {
+    switch(system) {
+      case "weapons":
+        return ship.setStat(ship.weaponStat, ship.weaponStat.setting + amount, !inCombat);
+      case "shields":
+        return ship.setStat(ship.shieldStat, ship.shieldStat.setting + amount, !inCombat);
+      case "engines":
+        return ship.setStat(ship.engineStat, ship.engineStat.setting + amount, !inCombat);
+      default:
+    }
+    return false;
+  }
+
   public function checkLocked():Void
   {
     var foundPirate = false;

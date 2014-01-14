@@ -93,6 +93,21 @@ class Sector extends Scene
       if(space != null) {
         Game.instance.moveTo(space);
       }
+
+      var btn:Base;
+      btn = cast(collidePoint("btn_plus", Input.mouseX, Input.mouseY), Base);
+      if(btn != null) {
+        if(Game.instance.modEnergy(btn.name, 1)) {
+          gameMenu.updateGraphic();
+        }
+      }
+
+      btn = cast(collidePoint("btn_minus", Input.mouseX, Input.mouseY), Base);
+      if(btn != null) {
+        if(Game.instance.modEnergy(btn.name, -1)) {
+          gameMenu.updateGraphic();
+        }
+      }
     } else if (Input.pressed(Key.ESCAPE)) {
       Game.instance.goToMenu();
     } else if (Input.pressed(Key.F)) {

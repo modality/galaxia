@@ -14,27 +14,37 @@ class Ship extends Base
   public var movingOnPath:Bool;
 
   public var freeEnergy:Int;
+  public var reservedEnergy:Int;
   public var totalEnergy:Int;
   public var energyXferRate:Int;
 
   public var attack(get,null):Float;
+  public var weaponStat:ShipSystem;
+  /*
   public var weaponEnergy:Int;
   public var weaponEnergyCap:Int;
   public var weaponEnergySetting:Int;
+  */
 
   public var fuel:Float;
   public var fuelUse(get, null):Float;
   public var damageEvasion(get, null):Float;
+  public var engineStat:ShipSystem;
+  /*
   public var engineEnergy:Int;
   public var engineEnergyCap:Int;
   public var engineEnergySetting:Int;
+  */
 
   public var shields:Float;
   public var maxShields:Int;
   public var shieldRegen(get, null):Float;
+  public var shieldStat:ShipSystem;
+  /*
   public var shieldEnergy:Int;
   public var shieldEnergyCap:Int;
   public var shieldEnergySetting:Int;
+  */
 
   public var hull:Float;
   public var maxHull:Int;
@@ -42,24 +52,20 @@ class Ship extends Base
   public function new()
   {
     super();
+
     freeEnergy = 1;
+    reservedEnergy = 0;
     totalEnergy = 4;
     energyXferRate = 1;
 
-    weaponEnergy = 1;
-    weaponEnergyCap = 2;
-    weaponEnergySetting = weaponEnergy;
+    weaponStat = new ShipSystem(1, 2, 1);
 
     fuel = 20;
-    engineEnergy = 1;
-    engineEnergyCap = 2;
-    engineEnergySetting = engineEnergy;
+    engineStat = new ShipSystem(1, 2, 1);
 
     maxShields = 10;
     shields = maxShields;
-    shieldEnergy = 1;
-    shieldEnergyCap = 2;
-    shieldEnergySetting = shieldEnergy;
+    shieldStat = new ShipSystem(1, 2 ,1);
 
     maxHull = 10;
     hull = maxHull;
@@ -79,6 +85,36 @@ class Ship extends Base
       shields -= howMuch;
     }
     shields = HXP.round(shields, 1);
+  }
+
+  public function setStat(stat:ShipSystem, setting:Int, immediate:Bool):Bool
+  {
+
+    if(setting > stat.cap) return false;
+    if(setting < 0) return false;
+    if(setting == stat.setting) return false;
+
+    var delta = setting - stat.setting;
+    if(delta > 0) {
+      if(delta > freeEnergy) return false;
+      freeEnergy -= delta;
+      stat.setting = setting;
+      if(immediate) {
+        stat.energy = setting;
+      } else {
+        reservedEnergy += delta;
+      }
+      return true;
+    } else if(delta < 0) {
+      if(setting < 0) return false;
+      freeEnergy -= delta;
+      stat.setting = setting; 
+      if(immediate) {
+        stat.energy = setting;
+      }
+      return true;
+    }
+    return false;
   }
 
   public function step(doEnergy:Bool, doFuel:Bool):Void
@@ -102,22 +138,22 @@ class Ship extends Base
   public function pushEnergy():Void
   {
     if(freeEnergy > 0) {
-      var shieldDelta:Int = shieldEnergySetting - shieldEnergy,
-          engineDelta:Int = engineEnergySetting - engineEnergy,
-          weaponDelta:Int = weaponEnergySetting - weaponEnergy;
+      var shieldDelta:Int = shieldStat.setting - shieldStat.energy,
+          engineDelta:Int = engineStat.setting - engineStat.energy,
+          weaponDelta:Int = weaponStat.setting - weaponStat.energy;
       var rate:Int;
 
       if(shieldDelta > 0 && shieldDelta > engineDelta && shieldDelta > weaponDelta) {
         rate = Std.int(Math.min(Math.min(shieldDelta, energyXferRate), freeEnergy));
-        shieldEnergy += rate;
+        shieldStat.energy += rate;
         freeEnergy -= rate;
       } else if(engineDelta > 0 && engineDelta > weaponDelta) {
         rate = Std.int(Math.min(Math.min(engineDelta, energyXferRate), freeEnergy));
-        engineEnergy += rate;
+        engineStat.energy += rate;
         freeEnergy -= rate;
       } else if(weaponDelta > 0) {
         rate = Std.int(Math.min(Math.min(weaponDelta, energyXferRate), freeEnergy));
-        weaponEnergy += rate;
+        weaponStat.energy += rate;
         freeEnergy -= rate;
       }
     }
@@ -125,21 +161,21 @@ class Ship extends Base
 
   public function pullEnergy():Void
   {
-    var shieldDelta:Int = shieldEnergy - shieldEnergySetting,
-        engineDelta:Int = engineEnergy - engineEnergySetting,
-        weaponDelta:Int = weaponEnergy - weaponEnergySetting;
+    var shieldDelta:Int = shieldStat.energy - shieldStat.setting,
+        engineDelta:Int = engineStat.energy - engineStat.setting,
+        weaponDelta:Int = weaponStat.energy - weaponStat.setting;
     
     if(shieldDelta > 0 && shieldDelta > engineDelta && shieldDelta > weaponDelta) {
       var rate = Std.int(Math.min(shieldDelta, energyXferRate));
-      shieldEnergy -= rate;
+      shieldStat.energy -= rate;
       freeEnergy += rate;
     } else if(engineDelta > 0 && engineDelta > weaponDelta) {
       var rate = Std.int(Math.min(engineDelta, energyXferRate));
-      engineEnergy -= rate;
+      engineStat.energy -= rate;
       freeEnergy += rate;
     } else if(weaponDelta > 0) {
       var rate = Std.int(Math.min(weaponDelta, energyXferRate));
-      weaponEnergy -= rate;
+      weaponStat.energy -= rate;
       freeEnergy += rate;
     }
   }
@@ -167,22 +203,22 @@ class Ship extends Base
 
   private function get_attack():Float
   {
-    if(weaponEnergy == 0) return 0;
-    return HXP.round(1 + ((weaponEnergy - 1) * 0.2), 1);
+    if(weaponStat.energy == 0) return 0;
+    return HXP.round(1 + ((weaponStat.energy - 1) * 0.2), 1);
   }
 
   private function get_fuelUse():Float
   {
-    return HXP.round(Math.max(0, 1 - (engineEnergy * 0.1)), 1);
+    return HXP.round(Math.max(0, 1 - (engineStat.energy * 0.1)), 1);
   }
 
   private function get_damageEvasion():Float
   {
-    return HXP.round(engineEnergy * 0.1, 1);
+    return HXP.round(engineStat.energy * 0.1, 1);
   }
 
   private function get_shieldRegen():Float
   {
-    return HXP.round(shieldEnergy * 0.2, 1);
+    return HXP.round(shieldStat.energy * 0.2, 1);
   }
 }
