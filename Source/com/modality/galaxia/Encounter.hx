@@ -29,8 +29,12 @@ class Encounter extends Base
         this.graphic = new Image(Assets.SCIENTIST_ICON);
       case Trader:
         this.graphic = new Image(Assets.TRADER_ICON);
-      case Pirate:
-        this.graphic = new Image(Assets.PIRATE_ICON);
+      default:
     }
+  }
+
+  public function activate():Void
+  {
+
   }
 }

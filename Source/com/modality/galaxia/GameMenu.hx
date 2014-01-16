@@ -52,25 +52,23 @@ class GameMenu extends Base
     ent.y = 512;
     scene.add(ent);
 
-    /*
     shields = new TextBase("shields");
     shields.x = x+12;
-    shields.y = y+370;
+    shields.y = y+150;
     shields.text.color = Constants.COLOR_ACTIVE_1;
     scene.add(shields);
 
     hull = new TextBase("hull");
     hull.x = x+12;
-    hull.y = y+400;
+    hull.y = y+180;
     hull.text.color = Constants.COLOR_ACCENT_2;
     scene.add(hull);
 
     fuel = new TextBase("fuel");
     fuel.x = x+12;
-    fuel.y = y+430;
+    fuel.y = y+210;
     fuel.text.color = Constants.COLOR_ACCENT_3;
     scene.add(fuel);
-    */
 
     /*
     menuPanel = new Base();
@@ -95,11 +93,9 @@ class GameMenu extends Base
     reactorDisplay.setting = Game.player.freeEnergy;
     reactorDisplay.updateGraphic();
 
-    /*
     shields.text.text = "Shields: "+Game.player.shields+"/"+Game.player.maxShields;
     hull.text.text = "Hull: "+Game.player.hull+"/"+Game.player.maxHull;
     fuel.text.text = "Fuel: "+Game.player.fuel;
-    */
   }
 
   public function buildEngineeringPanel():Void
@@ -116,17 +112,17 @@ class GameMenu extends Base
     txt.layer = Constants.BLOOM_LAYER;
     scene.add(txt);
 
-    weaponsDisplay = new EnergyDisplay("WEAPONS", "Damage: 1.2", Game.player.weaponStat, Assets.PANEL_RED, Assets.BLOOM_RED, Assets.NRG_RED, Assets.NRG_RED_FILL);
+    weaponsDisplay = new EnergyDisplay(Game.player.weaponStat, Assets.PANEL_RED, Assets.BLOOM_RED, Assets.NRG_RED, Assets.NRG_RED_FILL);
     weaponsDisplay.x = 8;
     weaponsDisplay.y = eng_y + 32;
     scene.add(weaponsDisplay);
 
-    shieldsDisplay = new EnergyDisplay("SHIELDS", "Regen: 1.2", Game.player.shieldStat, Assets.PANEL_BLUE, Assets.BLOOM_BLUE, Assets.NRG_BLUE, Assets.NRG_BLUE_FILL);
+    shieldsDisplay = new EnergyDisplay(Game.player.shieldStat, Assets.PANEL_BLUE, Assets.BLOOM_BLUE, Assets.NRG_BLUE, Assets.NRG_BLUE_FILL);
     shieldsDisplay.x = 128;
     shieldsDisplay.y = eng_y + 32;
     scene.add(shieldsDisplay);
 
-    enginesDisplay = new EnergyDisplay("ENGINES", "Fuel Use: 0.9\nDmg. Evade: 0.1", Game.player.engineStat, Assets.PANEL_GREEN, Assets.BLOOM_GREEN, Assets.NRG_GREEN, Assets.NRG_GREEN_FILL);
+    enginesDisplay = new EnergyDisplay(Game.player.engineStat, Assets.PANEL_GREEN, Assets.BLOOM_GREEN, Assets.NRG_GREEN, Assets.NRG_GREEN_FILL);
     enginesDisplay.x = weaponsDisplay.x;
     enginesDisplay.y = weaponsDisplay.y + 80;
     scene.add(enginesDisplay);
@@ -138,8 +134,7 @@ class GameMenu extends Base
     scene.add(sensorsDisplay);
     */
 
-    var reactorStat = new ShipSystem(Game.player.freeEnergy, Game.player.totalEnergy, Game.player.freeEnergy);
-    reactorDisplay = new EnergyDisplay("REACTOR", "Transfer Rate: 1", reactorStat, Assets.PANEL_YELLOW, Assets.BLOOM_YELLOW, Assets.NRG_YELLOW, Assets.NRG_YELLOW_FILL, true);
+    reactorDisplay = new EnergyDisplay(Game.player.reactorStat, Assets.PANEL_YELLOW, Assets.BLOOM_YELLOW, Assets.NRG_YELLOW, Assets.NRG_YELLOW_FILL, true);
     reactorDisplay.x = shieldsDisplay.x;
     reactorDisplay.y = shieldsDisplay.y+80;
     scene.add(reactorDisplay);

@@ -47,4 +47,28 @@ class Block extends Base
     objects = [object];
     return object;
   }
+
+  public function hasObject(_type:String):Bool
+  {
+    for(base in objects) {
+      if(base.type == _type && !base.dead) return true;
+    }
+    return false;
+  }
+
+  public function getObjects(_type:String):Array<Base>
+  {
+    var objs:Array<Base> = [];
+    for(base in objects) {
+      if(base.type == _type && !base.dead) {
+        objs.push(base);
+      }
+    }
+    return objs;
+  }
+
+  public function removeObject(obj:Base)
+  {
+    objects.remove(obj);
+  }
 }

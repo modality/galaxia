@@ -28,7 +28,7 @@ class EnergyDisplay extends Base
 
   public var pool:Bool;
 
-  public function new(_title:String, _desc:String, _stat:ShipSystem, _panel_gfx:String, _bloom_gfx:String, _points_gfx:String, _fill_gfx:String, _pool:Bool = false)
+  public function new(_stat:ShipSystem, _panel_gfx:String, _bloom_gfx:String, _points_gfx:String, _fill_gfx:String, _pool:Bool = false)
   {
     super();
     stat = _stat;
@@ -51,12 +51,12 @@ class EnergyDisplay extends Base
     bloom.graphic = new Image(bloom_gfx);
     bloom.layer = Constants.BLOOM_LAYER;
 
-    title = new TextBase(_title.toUpperCase());
+    title = new TextBase(stat.title);
     title.text.color = 0x000000;
     title.text.font = Assets.FONT_BOLD;
     title.layer = Constants.BLOOM_LAYER;
 
-    desc = new TextBase(_desc);
+    desc = new TextBase(stat.desc);
     desc.text.size = Constants.FONT_SIZE_XS;
     desc.text.font = Assets.FONT_BOLD;
     desc.layer = Constants.MENU_LAYER;
@@ -64,14 +64,14 @@ class EnergyDisplay extends Base
     if(!pool) {
       plusBtn = new Base();
       plusBtn.type = "btn_plus";
-      plusBtn.name = _title.toLowerCase();
+      plusBtn.name = stat.title.toLowerCase();
       plusBtn.graphic = new Image(Assets.NRG_PLUS);
       plusBtn.layer = Constants.BLOOM_LAYER;
       plusBtn.setHitboxTo(plusBtn.graphic);
 
       minusBtn = new Base();
       minusBtn.type = "btn_minus";
-      minusBtn.name = _title.toLowerCase();
+      minusBtn.name = stat.title.toLowerCase();
       minusBtn.graphic = new Image(Assets.NRG_MINUS);
       minusBtn.layer = Constants.BLOOM_LAYER;
       minusBtn.setHitboxTo(minusBtn.graphic);
@@ -166,12 +166,14 @@ class EnergyDisplay extends Base
   {
     title.x = x + 4;
     title.y = y + 1;
+    title.text.text = stat.title;
 
     bloom.x = x - 6;
     bloom.y = y - 6;
 
     desc.x = x;
     desc.y = y + 40;
+    desc.text.text = stat.desc;
 
     if(!pool) {
       minusBtn.x = x + 80;

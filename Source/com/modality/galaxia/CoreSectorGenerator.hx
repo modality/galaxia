@@ -109,7 +109,7 @@ class CoreSectorGenerator extends SectorGenerator
         ]));
         */
       case Hostile:
-        space.encounter = new Pirate(1, 2);
+        space.encounter = new PirateEncounter(1, 2);
       case Quest:
         /*
         space.encounter = Generator.generateEncounter(AugRandom.weightedChoice([

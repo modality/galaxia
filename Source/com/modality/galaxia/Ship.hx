@@ -17,6 +17,7 @@ class Ship extends Base
   public var reservedEnergy:Int;
   public var totalEnergy:Int;
   public var energyXferRate:Int;
+  public var reactorStat:ShipSystem;
 
   public var attack(get,null):Float;
   public var weaponStat:ShipSystem;
@@ -57,15 +58,16 @@ class Ship extends Base
     reservedEnergy = 0;
     totalEnergy = 4;
     energyXferRate = 1;
+    reactorStat = new ShipSystem("REACTOR", 1, 4, 1);
 
-    weaponStat = new ShipSystem(1, 2, 1);
+    weaponStat = new ShipSystem("WEAPONS", 1, 2, 1);
 
     fuel = 20;
-    engineStat = new ShipSystem(1, 2, 1);
+    engineStat = new ShipSystem("ENGINES", 1, 2, 1);
 
     maxShields = 10;
     shields = maxShields;
-    shieldStat = new ShipSystem(1, 2 ,1);
+    shieldStat = new ShipSystem("SHIELDS", 1, 2 ,1);
 
     maxHull = 10;
     hull = maxHull;
@@ -73,6 +75,7 @@ class Ship extends Base
     movingOnPath = false;
     graphic = new Image(Assets.SPACESHIP);
     layer = Constants.ENCOUNTER_LAYER;
+    updateDescriptions();
   }
 
   public function takeDamage(howMuch:Float):Void
@@ -104,6 +107,7 @@ class Ship extends Base
       } else {
         reservedEnergy += delta;
       }
+      updateDescriptions();
       return true;
     } else if(delta < 0) {
       if(setting < 0) return false;
@@ -112,9 +116,18 @@ class Ship extends Base
       if(immediate) {
         stat.energy = setting;
       }
+      updateDescriptions();
       return true;
     }
     return false;
+  }
+
+  public function updateDescriptions():Void
+  {
+    weaponStat.desc = "Attack: "+get_attack();
+    shieldStat.desc = "Regen: "+get_shieldRegen();
+    engineStat.desc = "Fuel Use: "+get_fuelUse()+"\nDmg. Evade: "+get_damageEvasion();
+    reactorStat.desc = "Transfer Rate: "+energyXferRate;
   }
 
   public function step(doEnergy:Bool, doFuel:Bool):Void

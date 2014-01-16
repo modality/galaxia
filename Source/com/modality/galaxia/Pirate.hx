@@ -13,21 +13,34 @@ import com.haxepunk.utils.Ease;
 
 import com.modality.aug.Base;
 
-class Pirate extends Encounter
+class Pirate extends Base
 {
   public var turnUncovered:Int;
   public var attack:Float;
   public var health:Float;
   public var maxHealth:Int;
+
   public var emitter:Emitter;
   public var emitter_entity:Entity;
 
-  public function new(_atk:Int, _hp:Int)
+  public var sector:Sector;
+  public var space:Space;
+
+  public function new(_atk:Int, _hp:Int, _sector:Sector, _space:Space)
   {
-    super(EncounterType.Pirate, "Pirate", "Your ship is beset by pirates!");
+    super();
     attack = _atk;
     health = _hp;
     maxHealth = _hp;
+    sector = _sector;
+    space = _space;
+    turnUncovered = Game.instance.turnNumber;
+    type = "pirate";
+    layer = Constants.ENCOUNTER_LAYER;
+    graphic = new Image(Assets.PIRATE_ICON);
+
+    x = space.x;
+    y = space.y;
 
     var bmd:BitmapData = new BitmapData(5, 5, false, 0xFFFFFF);
     emitter = new Emitter(bmd, 5, 5);
@@ -40,15 +53,16 @@ class Pirate extends Encounter
     emitter.setAlpha("smoke", 1, 0.8);
     emitter.setColor("smoke", 0xFFFFFF, 0x666666);
     emitter.setMotion("smoke", 0, 10, 7, 360, 5, 7);
+    sector.add(this);
   }
-  
+
   public function takeDamage(howMuch:Float):Void
   {
     var s:Sector = cast(HXP.scene, Sector);
     health -= howMuch;
     if(health <= 0) {
-      s.removeEncounter(this);
       Game.instance.addItem(Generator.pirateReward());
+      dead = true;
       destroy();
     } else {
       damage();
@@ -84,7 +98,8 @@ class Pirate extends Encounter
     vt.tween(cast(this.graphic, Image), "alpha", 0, 7, Ease.sineInOut);
     addTween(vt, true);
     addTween(new Alarm(9,  function(o:Dynamic):Void {
-      scene.remove(this);
+      space.removeObject(this);
+      sector.remove(this);
     }, TweenType.OneShot),true);
   }
 }

@@ -48,8 +48,8 @@ class OuterSectorGenerator extends SectorGenerator
           EncounterType.Scientist => 50
         ]));
       case Hostile:
-        var pirate:Pirate = new Pirate(2, 5);
-        space.encounter = pirate;
+        //var pirate:Pirate = new Pirate(2, 5);
+        //space.encounter = pirate;
     }
   }
 }

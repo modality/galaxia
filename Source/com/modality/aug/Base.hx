@@ -14,11 +14,13 @@ class Base extends Entity implements IEventDispatcher
 {
   private var _dispatcher:EventDispatcher;
 
+  public var dead:Bool;
   public var alpha(get, set):Float;
 
   public function new(x:Float = 0, y:Float = 0, graphic:Graphic = null, mask:Mask = null)
   {
     super(x, y, graphic, mask);
+    dead = false;
     _dispatcher = new EventDispatcher();
   }
 

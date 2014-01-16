@@ -138,8 +138,11 @@ class Game
           ship.moveOnPath(nodes.slice(0, 1));
         }
       } else {
-        if(space.encounter != null && space.encounter.encounterType == EncounterType.Pirate) {
-          cast(space.encounter, Pirate).takeDamage(ship.attack);
+        if(space.hasObject("pirate")) {
+          var pirates = space.getObjects("pirate");
+          for(pirate in pirates) {
+            cast(pirate, Pirate).takeDamage(ship.attack);
+          }
           ship.step(true, false);
         } else {
           currentSpace = space;
@@ -176,7 +179,7 @@ class Game
         for(u in i-1...i+2) {
           for(v in j-1...j+2) {
             var nayb = sector.grid.get(u, v);
-            if(nayb != null && nayb.explored && nayb.encounter != null && nayb.encounter.encounterType == EncounterType.Pirate) {
+            if(nayb != null && nayb.hasObject("pirate")) {
               s.locked = true;
               foundPirate = true;
             }
@@ -230,9 +233,10 @@ class Game
   {
     var sector:Sector = cast(HXP.scene, Sector);
     sector.grid.each(function(s:Space, i:Int, j:Int):Void {
-      if(s.explored) {
-        if(s.encounter != null && s.encounter.encounterType == EncounterType.Pirate) {
-          var p:Pirate = cast(s.encounter, Pirate);
+      if(s.explored && s.hasObject("pirate")) {
+        var pirates = s.getObjects("pirate");
+        for(pirate in pirates) {
+          var p:Pirate = cast(pirate, Pirate);
           if(p.health > 0 && p.turnUncovered < turnNumber) {
             ship.takeDamage(p.attack);
           }

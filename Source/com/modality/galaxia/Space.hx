@@ -27,8 +27,8 @@ class Space extends Block
   public override function added():Void
   {
     if(encounter != null) {
-      encounter.x = this.x + 10;
-      encounter.y = this.y + 10;
+      encounter.x = this.x;
+      encounter.y = this.y;
       scene.add(encounter);
     }
   }
@@ -40,10 +40,7 @@ class Space extends Block
       layer = Constants.EXPLORED_LAYER;
       updateGraphic();
       if(encounter != null) {
-        encounter.updateGraphic();
-        if(encounter.encounterType == EncounterType.Pirate) {
-          cast(encounter, Pirate).turnUncovered = Game.instance.turnNumber;
-        }
+        encounter.activate();
       }
       if(item != null) {
         Game.instance.addItem(item);
