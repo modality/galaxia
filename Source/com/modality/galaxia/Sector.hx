@@ -63,8 +63,7 @@ class Sector extends Scene
     stationSpace.spaceType = SpaceType.SpaceStation;
     stationSpace.explored = true;
     stationSpace.updateGraphic();
-
-    Game.instance.currentSpace = stationSpace;
+    Game.player.setSpace(stationSpace);
   }
 
   public override function begin():Void
@@ -81,8 +80,7 @@ class Sector extends Scene
         s.onNebula = nebula.grid[i][j];
       });
     }
-    add(Game.instance.ship);
-    Game.instance.updateShipPosition();
+    add(Game.player);
   }
 
   public override function update():Void

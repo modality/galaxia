@@ -50,9 +50,12 @@ class Ship extends Base
   public var hull:Float;
   public var maxHull:Int;
 
+  public var space:Space;
+
   public function new()
   {
     super();
+    type = "player";
 
     freeEnergy = 1;
     reservedEnergy = 0;
@@ -76,6 +79,14 @@ class Ship extends Base
     graphic = new Image(Assets.SPACESHIP);
     layer = Constants.ENCOUNTER_LAYER;
     updateDescriptions();
+  }
+
+  public override function added():Void
+  {
+    if(space != null) {
+      x = space.x;
+      y = space.y;
+    }
   }
 
   public function takeDamage(howMuch:Float):Void
@@ -191,6 +202,15 @@ class Ship extends Base
       weaponStat.energy -= rate;
       freeEnergy += rate;
     }
+  }
+
+  public function setSpace(_space:Space):Void
+  {
+    if(space != null) {
+      space.objects.remove(this);
+    }
+    space = _space;
+    space.objects.push(this);
   }
 
   public function moveOnPath(nodes:Array<Node>):Void

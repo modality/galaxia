@@ -8,14 +8,18 @@ import com.haxepunk.graphics.Emitter;
 import com.haxepunk.Tween;
 import com.haxepunk.tweens.misc.Alarm;
 import com.haxepunk.tweens.misc.VarTween;
+import com.haxepunk.tweens.misc.MultiVarTween;
 import com.haxepunk.tweens.motion.LinearPath;
 import com.haxepunk.utils.Ease;
 
+import com.modality.aug.AStar;
+import com.modality.aug.Node;
 import com.modality.aug.Base;
 
 class Pirate extends Base
 {
   public var turnUncovered:Int;
+  public var moved:Bool;
   public var attack:Float;
   public var health:Float;
   public var maxHealth:Int;
@@ -98,8 +102,39 @@ class Pirate extends Base
     vt.tween(cast(this.graphic, Image), "alpha", 0, 7, Ease.sineInOut);
     addTween(vt, true);
     addTween(new Alarm(9,  function(o:Dynamic):Void {
-      space.removeObject(this);
+      space.objects.remove(this);
       sector.remove(this);
     }, TweenType.OneShot),true);
+  }
+
+  public function move():Bool
+  {
+    var e:AStar = new AStar();
+    e.generateMap(sector.grid.width, sector.grid.height);
+    e.eachNode(function(n:Node):Void {
+      if(n.x == Game.player.space.x_index && n.y == Game.player.space.y_index) {
+        n.setTypeByText("END_NODE");
+      } else if(n.x == space.x_index && n.y == space.y_index) {
+        n.setTypeByText("START_NODE");
+      } else if(!sector.grid.get(n.x, n.y).explored || sector.grid.get(n.x, n.y).hasObject("pirate")) {
+        n.setTypeByText("BREAK_NODE");
+      }
+    });
+    var nodes:Array<Node> = e.getPath();
+    if(nodes.length > 0) {
+      var target:Node = nodes.shift();
+      var mvt:MultiVarTween = new MultiVarTween(null, TweenType.OneShot);
+      mvt.tween(this, {
+        "x": target.x * Constants.BLOCK_W + Constants.GRID_X,
+        "y": target.y * Constants.BLOCK_H + Constants.GRID_Y
+      }, 2);
+      addTween(mvt, true);
+      space.objects.remove(this);
+      space = sector.grid.get(target.x, target.y);
+      space.objects.push(this);
+    } else {
+      return false;
+    }
+    return true;
   }
 }

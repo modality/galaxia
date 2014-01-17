@@ -26,6 +26,11 @@ class Block extends Base
     y_index = _y_index;
   }
 
+  public function manhattan(b:Block):Int
+  {
+    return Math.round(Math.abs(x_index - b.x_index)) + Math.round(Math.abs(y_index - b.y_index));
+  }
+
   public function destroy():Void
   {
     changeState("empty");
@@ -65,10 +70,5 @@ class Block extends Base
       }
     }
     return objs;
-  }
-
-  public function removeObject(obj:Base)
-  {
-    objects.remove(obj);
   }
 }

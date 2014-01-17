@@ -14,7 +14,6 @@ class Game
   public var turnNumber:Int;
   public var sm:SectorMenu;
   public var inCombat:Bool;
-  public var currentSpace:Space;
   public var inventory:Array<Item>;
   public var ship:Ship;
 
@@ -97,7 +96,7 @@ class Game
     var e:AStar = new AStar();
     e.generateMap(grid.width, grid.height);
     e.eachNode(function(n:Node):Void {
-      if(n.x == currentSpace.x_index && n.y == currentSpace.y_index) {
+      if(n.x == ship.space.x_index && n.y == ship.space.y_index) {
         n.setTypeByText("START_NODE");
       } else if(n.x == space.x_index && n.y == space.y_index) {
         n.setTypeByText("END_NODE");
@@ -122,7 +121,7 @@ class Game
         nodes.pop();
       }
       if(nodes.length > 0) {
-        currentSpace = grid.get(nodes[nodes.length-1].x, nodes[nodes.length-1].y);
+        ship.setSpace(grid.get(nodes[nodes.length-1].x, nodes[nodes.length-1].y));
         ship.moveOnPath(nodes);
       }
     } else {
@@ -134,7 +133,7 @@ class Game
         if(space.encounter != null && space.encounter.encounterType == EncounterType.Pirate) {
           inCombat = true;
         } else {
-          currentSpace = space;
+          ship.setSpace(space);
           ship.moveOnPath(nodes.slice(0, 1));
         }
       } else {
@@ -145,7 +144,7 @@ class Game
           }
           ship.step(true, false);
         } else {
-          currentSpace = space;
+          ship.setSpace(space);
           ship.moveOnPath(nodes.slice(0, 1));
           ship.step(true, true);
         }
@@ -232,17 +231,22 @@ class Game
   public function piratesAttack():Void
   {
     var sector:Sector = cast(HXP.scene, Sector);
-    sector.grid.each(function(s:Space, i:Int, j:Int):Void {
-      if(s.explored && s.hasObject("pirate")) {
-        var pirates = s.getObjects("pirate");
-        for(pirate in pirates) {
-          var p:Pirate = cast(pirate, Pirate);
-          if(p.health > 0 && p.turnUncovered < turnNumber) {
-            ship.takeDamage(p.attack);
-          }
+    var pirates:Array<Pirate> = [];
+
+    sector.getType("pirate", pirates);
+    pirates.sort(function(a:Pirate, b:Pirate):Int {
+      return a.space.manhattan(ship.space) - b.space.manhattan(ship.space);
+    });
+
+    for(pirate in pirates) {
+      if(!pirate.dead) {
+        if(pirate.space.manhattan(ship.space) == 1) {
+          ship.takeDamage(pirate.attack);
+        } else {
+          pirate.move();
         }
       }
-    });
+    }
   }
 
   public function piratesHeal():Void
@@ -256,13 +260,5 @@ class Game
         }
       }
     });
-  }
-
-  public function updateShipPosition():Void
-  {
-    if(currentSpace != null) {
-      ship.x = currentSpace.x;
-      ship.y = currentSpace.y;
-    }
   }
 }
