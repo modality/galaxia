@@ -243,7 +243,11 @@ class Game
         if(pirate.space.manhattan(ship.space) == 1) {
           ship.takeDamage(pirate.attack);
         } else {
-          pirate.move();
+          if(pirate.move()) {
+            return;
+          } else {
+            // do something else!
+          }
         }
       }
     }
