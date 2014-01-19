@@ -113,7 +113,7 @@ class Game
     if(!inCombat) {
       if(canExplore(space)) {
         space.explore();
-        ship.step(false, true);
+        ship.step(true);
         turnTaken = true;
       }
       if(space.encounter != null && space.encounter.encounterType == EncounterType.Pirate) {
@@ -129,7 +129,7 @@ class Game
       turnTaken = true;
       if(canExplore(space)) {
         space.explore();
-        ship.step(true, true);
+        ship.step(true);
         if(space.encounter != null && space.encounter.encounterType == EncounterType.Pirate) {
           inCombat = true;
         } else {
@@ -142,30 +142,16 @@ class Game
           for(pirate in pirates) {
             cast(pirate, Pirate).takeDamage(ship.attack);
           }
-          ship.step(true, false);
+          ship.step(false);
         } else {
           ship.setSpace(space);
           ship.moveOnPath(nodes.slice(0, 1));
-          ship.step(true, true);
+          ship.step(true);
         }
       }
     }
 
     if(turnTaken) pulse();
-  }
-
-  public function modEnergy(system:String, amount:Int):Bool
-  {
-    switch(system) {
-      case "weapons":
-        return ship.setStat(ship.weaponStat, ship.weaponStat.setting + amount, !inCombat);
-      case "shields":
-        return ship.setStat(ship.shieldStat, ship.shieldStat.setting + amount, !inCombat);
-      case "engines":
-        return ship.setStat(ship.engineStat, ship.engineStat.setting + amount, !inCombat);
-      default:
-    }
-    return false;
   }
 
   public function checkLocked():Void

@@ -20,8 +20,8 @@ class Pirate extends Base
 {
   public var turnUncovered:Int;
   public var moved:Bool;
-  public var attack:Float;
-  public var health:Float;
+  public var attack:Int;
+  public var health:Int;
   public var maxHealth:Int;
 
   public var emitter:Emitter;
@@ -60,7 +60,7 @@ class Pirate extends Base
     sector.add(this);
   }
 
-  public function takeDamage(howMuch:Float):Void
+  public function takeDamage(howMuch:Int):Void
   {
     var s:Sector = cast(HXP.scene, Sector);
     health -= howMuch;
