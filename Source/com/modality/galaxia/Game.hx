@@ -1,7 +1,9 @@
 package com.modality.galaxia;
 
 import com.haxepunk.HXP;
+import com.haxepunk.graphics.Text;
 
+import com.modality.aug.Base;
 import com.modality.aug.AStar;
 import com.modality.aug.Node;
 import com.modality.aug.Grid;
@@ -10,12 +12,17 @@ class Game
 {
   public static var instance:Game;
   public static var player:Ship;
+  public static var log_gfx:Text;
 
   public var turnNumber:Int;
   public var sm:SectorMenu;
   public var inCombat:Bool;
   public var inventory:Array<Item>;
   public var ship:Ship;
+  public var _log:Text;
+
+  public var currentPower:Power;
+  public var targets:Array<Space>;
 
   public function new()
   {
@@ -25,10 +32,19 @@ class Game
     turnNumber = 0;
     inCombat = false;
 
-    inventory = new Array<Item>();
-    ship = new Ship();
+    inventory = [];
+    targets = [];
 
+    _log = new Text("Welcome to GALAXIA!", 0, 0, 300, 224, {
+      font: Assets.FONT,
+      color: 0xFFFFFF,
+      size: Constants.FONT_SIZE_XS,
+      wordWrap: true,
+    });
+
+    ship = new Ship();
     Game.player = ship;
+    Game.log_gfx = _log;
   }
 
   public function setSectorMenu(_sm:SectorMenu):Void
@@ -70,6 +86,7 @@ class Game
   public function addItem(_item:Item):Void
   {
     if(_item.name == "Fuel") {
+      log("You found "+_item.amount+" fuel.");
       ship.fuel += _item.amount;
     } else {
       var foundItem:Bool = false;
@@ -84,10 +101,11 @@ class Game
         var item:Item = new Item(_item.name, _item.amount);
         inventory.push(item);
       }
+      log("You found "+_item.amount+" "+_item.name+".");
     }
   }
 
-  public function moveTo(space:Space)
+  public function moveTo(space:Space):Void
   {
     var grid:Grid<Space> = space.grid;
 
@@ -115,10 +133,11 @@ class Game
         space.explore();
         ship.step(true);
         turnTaken = true;
-      }
-      if(space.encounter != null && space.encounter.encounterType == EncounterType.Pirate) {
-        inCombat = true;
-        nodes.pop();
+        if(space.encounter != null && space.encounter.encounterType == EncounterType.Pirate) {
+          log("Your ship is beset by pirates!");
+          inCombat = true;
+          nodes.pop();
+        }
       }
       if(nodes.length > 0) {
         ship.setSpace(grid.get(nodes[nodes.length-1].x, nodes[nodes.length-1].y));
@@ -131,6 +150,7 @@ class Game
         space.explore();
         ship.step(true);
         if(space.encounter != null && space.encounter.encounterType == EncounterType.Pirate) {
+          log("Your ship is beset by pirates!");
           inCombat = true;
         } else {
           ship.setSpace(space);
@@ -140,6 +160,7 @@ class Game
         if(space.hasObject("pirate")) {
           var pirates = space.getObjects("pirate");
           for(pirate in pirates) {
+            log("You attack the pirate for "+ship.attack+" damage.");
             cast(pirate, Pirate).takeDamage(ship.attack);
           }
           ship.step(false);
@@ -152,6 +173,73 @@ class Game
     }
 
     if(turnTaken) pulse();
+  }
+
+  public function selectPower(power:Power):Void
+  {
+    if(!power.ready) return;
+    if(power.cost > ship.fuel) return;
+
+    currentPower = power;
+    targets = [];
+
+    if(power.targetSelf && !power.targetOther) {
+      executePower();
+    }
+
+    if(power.targetOther) {
+      pickTargets(power);
+    }
+  }
+
+  public function pickTargets(power:Power):Void
+  {
+    var sector:Sector = cast(HXP.scene, Sector);
+    currentPower = power;
+    targets = [];
+    sector.showTargets(ship.space, currentPower);
+    if(power.targetCount == 1) {
+      log("Select a target...");
+    } else {
+      log("Select "+power.targetCount+" targets...");
+    }
+  }
+
+  public function addTarget(space:Space):Void
+  {
+    targets.push(space);
+    if(targets.length >= currentPower.targetCount) {
+      executePower();
+    }
+  }
+
+  public function cancelPower():Void
+  {
+    var sector:Sector = cast(HXP.scene, Sector);
+    sector.clearTargets();
+    currentPower = null;
+    targets = [];
+  }
+  
+  public function executePower():Void
+  {
+    if(currentPower == null) return;
+
+    var sector:Sector = cast(HXP.scene, Sector);
+    sector.clearTargets();
+
+    currentPower.use(ship, targets);
+    ship.fuel -= currentPower.cost;
+
+    log("You used "+currentPower.title+"!");
+
+    if(!currentPower.immediate) {
+      pulse();
+    } else {
+      updateMenu();
+    }
+
+    currentPower = null;
   }
 
   public function checkLocked():Void
@@ -201,6 +289,9 @@ class Game
       piratesAttack();
       checkLocked();
     }
+    for(power in ship.powers) {
+      power.step();
+    }
     updateMenu();
     turnNumber++;
   }
@@ -211,6 +302,9 @@ class Game
       sm.gameMenu.updateGraphic();
     } else {
       cast(HXP.scene, Sector).gameMenu.updateGraphic();
+    }
+    for(power in ship.powers) {
+      power.updateGraphic();
     }
   }
 
@@ -228,6 +322,7 @@ class Game
       if(!pirate.dead) {
         if(pirate.space.manhattan(ship.space) == 1) {
           ship.takeDamage(pirate.attack);
+          log("Your ship takes "+pirate.attack+" damage.");
         } else {
           if(pirate.move()) {
             return;
@@ -250,5 +345,13 @@ class Game
         }
       }
     });
+  }
+
+  public function log(text:String):Void
+  {
+    _log.text = _log.text + "\n" + text;
+    if(_log.height > 224) {
+      _log.text = _log.text.split("\n").slice(-15).join("\n");
+    }
   }
 }

@@ -22,6 +22,10 @@ class Sector extends Scene
   public var gameMenu:GameMenu;
   public var nebulaMapped:Bool;
   public var nebulaEnt:Base;
+  public var log:Base;
+
+  public var targeting:Bool;
+  public var targetSquares:Array<Base>;
 
   public function new(_st:SectorType)
   {
@@ -30,6 +34,8 @@ class Sector extends Scene
     nebulaMapped = false;
     name = Generator.generateSectorName();
     gameMenu = new GameMenu();
+    targeting = false;
+    targetSquares = [];
 
     add(gameMenu);
 
@@ -64,6 +70,11 @@ class Sector extends Scene
     stationSpace.explored = true;
     stationSpace.updateGraphic();
     Game.player.setSpace(stationSpace);
+
+    log = new Base();
+    log.graphic = Game.log_gfx;
+    log.x = 0;
+    log.y = 544;
   }
 
   public override function begin():Void
@@ -81,15 +92,32 @@ class Sector extends Scene
       });
     }
     add(Game.player);
+    add(log);
   }
 
   public override function update():Void
   {
     super.update();
     if(Input.mouseReleased) {
-      var space:Space = cast(collidePoint("space", Input.mouseX, Input.mouseY), Space);
-      if(space != null) {
-        Game.instance.moveTo(space);
+      if(targeting) {
+        var target:Base = cast(collidePoint("target", Input.mouseX, Input.mouseY), Base);
+        if(target != null) {
+          var i:Int = Std.parseInt(target.name.split("_")[0]);
+          var j:Int = Std.parseInt(target.name.split("_")[1]);
+          Game.instance.addTarget(grid.get(i, j));
+        } else {
+          Game.instance.cancelPower();
+        }
+      } else {
+        var space:Space = cast(collidePoint("space", Input.mouseX, Input.mouseY), Space);
+        if(space != null) {
+          Game.instance.moveTo(space);
+        }
+
+        var power:Power = cast(collidePoint("power", Input.mouseX, Input.mouseY), Power);
+        if(power != null) {
+          Game.instance.selectPower(power);
+        }
       }
     } else if (Input.pressed(Key.ESCAPE)) {
       Game.instance.goToMenu();
@@ -100,6 +128,37 @@ class Sector extends Scene
     }
   }
 
+  public function showTargets(origin:Space, power:Power):Void
+  {
+    targeting = true;
+    var spaces:Array<Space> = grid.filter(function(s:Space, i:Int, j:Int) {
+      if(s == origin) return power.targetSelf;
+      return s.manhattan(origin) <= power.range;
+    });
+
+    for(s in spaces) {
+      var t:Base = new Base();
+      t.x = s.x;
+      t.y = s.y;
+      t.graphic = new Image(Assets.TARGET_SQUARE);
+      t.setHitboxTo(t.graphic);
+      t.layer = Constants.OVERLAY_LAYER;
+      t.type = "target";
+      t.name = s.x_index+"_"+s.y_index;
+
+      targetSquares.push(t);
+      add(t);
+    }
+  }
+
+  public function clearTargets():Void
+  {
+    for(ts in targetSquares) {
+      remove(ts);
+    }
+    targetSquares = [];
+    targeting = false;
+  }
 
   public function showSectorExplored():Void
   {

@@ -12,6 +12,7 @@ class Ship extends Base
 {
   public var movePath:Array<Node>;
   public var movingOnPath:Bool;
+  public var powers:Array<Power>;
 
   public var attack(get,null):Int;
   public var fuel:Int;
@@ -37,6 +38,9 @@ class Ship extends Base
     movingOnPath = false;
     graphic = new Image(Assets.SPACESHIP);
     layer = Constants.ENCOUNTER_LAYER;
+    powers = [];
+    powers.push(PowerGenerator.shieldBattery());
+    powers.push(PowerGenerator.multiShot());
   }
 
   public override function added():Void

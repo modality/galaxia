@@ -65,6 +65,7 @@ class Pirate extends Base
     var s:Sector = cast(HXP.scene, Sector);
     health -= howMuch;
     if(health <= 0) {
+      Game.instance.log("You destroyed the pirate!");
       Game.instance.addItem(Generator.pirateReward());
       dead = true;
       destroy();

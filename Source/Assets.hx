@@ -63,6 +63,10 @@ class Assets
   public static var PANEL_BLUE;
   public static var PANEL_PURPLE;
 
+  public static var SHIELD_BATTERY;
+  public static var MULTI_SHOT;
+  public static var TARGET_SQUARE;
+
   public static function init()
   {
     SECTOR_SELECT = "assets/sector_select.png";
@@ -125,6 +129,10 @@ class Assets
     PANEL_YELLOW = "assets/panel_yellow.png";
     PANEL_BLUE = "assets/panel_blue.png";
     PANEL_PURPLE = "assets/panel_purple.png";
+
+    SHIELD_BATTERY = "assets/storm_armor.png";
+    MULTI_SHOT = "assets/arcane_torrent.png";
+    TARGET_SQUARE = "assets/target_square.png";
   }
 
 }

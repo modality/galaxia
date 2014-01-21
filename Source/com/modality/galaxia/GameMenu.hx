@@ -62,14 +62,13 @@ class GameMenu extends Base
     fuel.text.color = Constants.COLOR_ACCENT_3;
     scene.add(fuel);
 
-    /*
-    menuPanel = new Base();
-    menuPanel.x = Constants.GRID_X;
-    menuPanel.y = Constants.GRID_Y;
-    menuPanel.graphic = new Image(Assets.MENU_PANEL);
-    menuPanel.layer = Constants.OVERLAY_LAYER;
-    scene.add(menuPanel);
-    */
+    var powers_y = 240;
+    for(power in Game.player.powers) {
+      power.x = 0;
+      power.y = powers_y;
+      powers_y += 100;
+      scene.add(power);
+    }
 
     updateGraphic();
   }
