@@ -112,4 +112,34 @@ class Grid<T:(Block)>
 
     return match.filter(function(x:T) { return x != null; });
   }
+
+  public function walk(block:T, direction:String):Array<T>
+  {
+    var v_x:Int = 0;
+    var v_y:Int = 0;
+    var c_x:Int = block.x_index;
+    var c_y:Int = block.y_index;
+
+    var ret_array:Array<T> = [];
+
+    switch(direction) {
+      case "left": v_x = -1;
+      case "right": v_x = 1;
+      case "up": v_y = -1;
+      case "down": v_y = 1;
+      default: return [];
+    }
+
+    var nayb:T;
+    do {
+      c_x += v_x;
+      c_y += v_y;
+      nayb = get(c_x, c_y);
+      if(nayb != null) {
+        ret_array.push(nayb);
+      }
+    } while (nayb != null);
+
+    return ret_array;
+  }
 }

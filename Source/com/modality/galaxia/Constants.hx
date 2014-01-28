@@ -31,12 +31,21 @@ class Constants
   public static var BLOCK_W:Int = 80;
   public static var BLOCK_H:Int = 80;
 
-  public static var NEBULA_LAYER:Int = 5;
-  public static var UNEXPLORED_LAYER:Int = 4;
-  public static var EXPLORED_LAYER:Int = 3;
-  public static var ENCOUNTER_LAYER:Int = 2;
-  public static var EFFECTS_LAYER:Int = 1;
-  public static var OVERLAY_LAYER:Int = 0;
+#if mobile
+  public static var X_SCALE:Float = 0.5;
+  public static var Y_SCALE:Float = 0.5;
+#else
+  public static var X_SCALE:Float = 1;
+  public static var Y_SCALE:Float = 1;
+#end
+
+  public static var NEBULA_LAYER:Int = 7;
+  public static var BEACON_LAYER:Int = 6;
+  public static var UNEXPLORED_LAYER:Int = 5;
+  public static var EXPLORED_LAYER:Int = 4;
+  public static var ENCOUNTER_LAYER:Int = 3;
+  public static var EFFECTS_LAYER:Int = 2;
+  public static var OVERLAY_LAYER:Int = 1;
 
   public static var MENU_LAYER:Int = 5;
   public static var SLOT_LAYER:Int = 4;

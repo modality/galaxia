@@ -53,20 +53,38 @@ class Block extends Base
     return object;
   }
 
-  public function hasObject(_type:String):Bool
+  public function hasObject(_type:String, ?_name:String):Bool
   {
     for(base in objects) {
-      if(base.type == _type && !base.dead) return true;
+      if(_name != null) {
+        if(base.type == _type && base.name == _name && !base.dead) return true;
+      } else {
+        if(base.type == _type && !base.dead) return true;
+      }
     }
     return false;
   }
 
-  public function getObjects(_type:String):Array<Base>
+  public function getObject(_type:String, ?_name:String):Base
+  {
+    for(base in objects) {
+      if(base.type == _type && !base.dead) {
+        if(_name == null || base.name == _name) {
+          return base;
+        }
+      }
+    }
+    return null;
+  }
+
+  public function getObjects(_type:String, ?_name:String):Array<Base>
   {
     var objs:Array<Base> = [];
     for(base in objects) {
       if(base.type == _type && !base.dead) {
-        objs.push(base);
+        if(_name == null || base.name == _name) {
+          objs.push(base);
+        }
       }
     }
     return objs;

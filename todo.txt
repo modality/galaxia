@@ -21,7 +21,7 @@ Decouple space type from encounter
 
 
 SCIENTIST -> defense??
-  - shield up
+  - shield up *
   - cloaking device (pirates don't attack until you do)
 
 TERRAFORMER -> attack?

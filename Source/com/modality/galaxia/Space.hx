@@ -14,6 +14,8 @@ class Space extends Block
   public var encounter:Encounter;
   public var item:Item;
   public var description:String;
+  public var scienceValue:Int;
+  public var materialsValue:Int;
 
   public function new(_x:Int = 0, _y:Int = 0)
   {
@@ -21,6 +23,8 @@ class Space extends Block
     type = "space";
     layer = Constants.UNEXPLORED_LAYER;
     spaceType = SpaceType.Voidness;
+    scienceValue = 0;
+    materialsValue = 0;
     locked = false;
   }
 

@@ -1,6 +1,7 @@
 package com.modality.galaxia;
 
 import flash.events.Event;
+import com.haxepunk.HXP;
 import com.haxepunk.Scene;
 import com.haxepunk.graphics.Image;
 import com.haxepunk.graphics.Text;
@@ -23,6 +24,8 @@ class Sector extends Scene
   public var nebulaMapped:Bool;
   public var nebulaEnt:Base;
   public var log:Base;
+  public var beacons:Array<Beacon>;
+  public var stationSpace:Space;
 
   public var targeting:Bool;
   public var targetSquares:Array<Base>;
@@ -36,13 +39,13 @@ class Sector extends Scene
     gameMenu = new GameMenu();
     targeting = false;
     targetSquares = [];
+    beacons = [];
 
     add(gameMenu);
 
     var ent:TextBase = new TextBase("sector "+name.toUpperCase());
     ent.text.size = Constants.FONT_SIZE_LG;
     ent.text.font = Assets.FONT_ITALIC;
-    //ent.text.scale = 0.6;
     ent.x = Constants.GRID_X;
     ent.y = 6;
     add(ent);
@@ -65,7 +68,7 @@ class Sector extends Scene
       return s.spaceType == SpaceType.Voidness && i != 0 && i <= (Constants.GRID_W-1) && j != 0 && j != (Constants.GRID_H-1) && s.encounter == null;
     });
 
-    var stationSpace:Space = voids.splice(AugRandom.range(0, voids.length), 1)[0];
+    stationSpace = voids.splice(AugRandom.range(0, voids.length), 1)[0];
     stationSpace.spaceType = SpaceType.SpaceStation;
     stationSpace.explored = true;
     stationSpace.updateGraphic();
@@ -92,6 +95,7 @@ class Sector extends Scene
       });
     }
     add(Game.player);
+    placeBeacon(Game.player.space);
     add(log);
   }
 
@@ -99,8 +103,11 @@ class Sector extends Scene
   {
     super.update();
     if(Input.mouseReleased) {
+      var mouse_x = Input.mouseX * Constants.X_SCALE;
+      var mouse_y = Input.mouseY * Constants.Y_SCALE;
+
       if(targeting) {
-        var target:Base = cast(collidePoint("target", Input.mouseX, Input.mouseY), Base);
+        var target:Base = cast(collidePoint("target", mouse_x, mouse_y), Base);
         if(target != null) {
           var i:Int = Std.parseInt(target.name.split("_")[0]);
           var j:Int = Std.parseInt(target.name.split("_")[1]);
@@ -109,12 +116,11 @@ class Sector extends Scene
           Game.instance.cancelPower();
         }
       } else {
-        var space:Space = cast(collidePoint("space", Input.mouseX, Input.mouseY), Space);
+        var space:Space = cast(collidePoint("space", mouse_x, mouse_y), Space);
         if(space != null) {
           Game.instance.moveTo(space);
         }
-
-        var power:Power = cast(collidePoint("power", Input.mouseX, Input.mouseY), Power);
+        var power:Power = cast(collidePoint("power", mouse_x, mouse_y), Power);
         if(power != null) {
           Game.instance.selectPower(power);
         }
@@ -125,6 +131,8 @@ class Sector extends Scene
       grid.each(function(s:Space, i:Int, j:Int):Void {
         s.explore();
       });
+    } else if (Input.pressed(Key.B)) {
+      placeBeacon(Game.player.space);
     }
   }
 
@@ -158,6 +166,141 @@ class Sector extends Scene
     }
     targetSquares = [];
     targeting = false;
+  }
+
+  public function placeBeacon(space:Space):Bool
+  {
+    var updateBeacons:Array<Beacon> = [];
+
+    if(space.hasObject("beacon")) {
+      var b:Beacon = cast(space.getObject("beacon"), Beacon);
+      if(b.line) {
+        b.line = false;
+        b.name = "node";
+        updateBeacons.push(b);
+      } else {
+        return false;
+      }
+    } else {
+      var main_b:Beacon = new Beacon(false, space);
+      main_b.name = "node";
+      main_b.x = space.x;
+      main_b.y = space.y;
+      space.objects.push(main_b);
+      add(main_b);
+      beacons.push(main_b);
+      updateBeacons.push(main_b);
+    }
+
+    var addBeacons = function(naybs:Array<Space>):Void {
+      for(nayb in naybs) {
+        if(!nayb.hasObject("beacon")) {
+          var b:Beacon = new Beacon(true, nayb);
+          b.name = "route";
+          b.x = nayb.x;
+          b.y = nayb.y;
+          nayb.objects.push(b);
+          add(b);
+          beacons.push(b);
+          updateBeacons.push(b);
+        } else {
+          var b:Beacon = cast(nayb.getObject("beacon"), Beacon);
+          updateBeacons.push(b);
+          if(!b.line) {
+            break;
+          }
+        }
+        if(nayb.spaceType == SpaceType.Planet || nayb.spaceType == SpaceType.Star) {
+          break;
+        }
+      }
+    }
+
+    addBeacons(space.grid.walk(space, "left"));
+    addBeacons(space.grid.walk(space, "right"));
+    addBeacons(space.grid.walk(space, "up"));
+    addBeacons(space.grid.walk(space, "down"));
+
+    updateRoutes();
+
+    return true;
+  }
+
+  public function updateRoutes():Void
+  {
+    var leftToWalk:Array<Space> = [stationSpace];
+    var activePlanets:Array<Space> = [];
+
+    for(beacon in beacons) {
+      beacon.activated = false;
+      beacon.walked = false;
+      beacon.horz = false;
+      beacon.vert = false;
+    }
+
+    var connectedSpaces = function(naybs:Array<Space>):Array<Space> {
+      for(i in 0...naybs.length) {
+        var nayb = naybs[i];
+        if(nayb.spaceType == SpaceType.Star) {
+          return [];
+        }
+        if(!nayb.explored) {
+          return [];
+        }
+        if(nayb.spaceType == SpaceType.Planet || nayb.hasObject("beacon", "node")) {
+          if(nayb.hasObject("beacon", "node") && cast(nayb.getObject("beacon", "node"), Beacon).walked) {
+            return [];
+          }
+          if(nayb.spaceType == SpaceType.Planet) {
+            activePlanets.remove(nayb);
+            activePlanets.push(nayb);
+          }
+          return naybs.slice(0, i+1);
+        }
+      }
+      return [];
+    }
+
+    var activateSpace = function(space:Space, horz:Bool):Void {
+      if(space.hasObject("beacon")) {
+        var beacon = cast(space.getObject("beacon"), Beacon);
+        beacon.activated = true;
+        if(horz) { beacon.horz = true; }
+        if(!horz) { beacon.vert = true; }
+        if(beacon.name == "node" && !beacon.walked) {
+          leftToWalk.push(space);
+        }
+      }
+    }
+
+    var activateSpaceHorz = function(space:Space):Void {
+      activateSpace(space, true);
+    }
+
+    var activateSpaceVert = function(space:Space):Void {
+      activateSpace(space, false);
+    }
+
+    while(leftToWalk.length > 0) {
+      var walkFrom = leftToWalk.shift();
+      if(walkFrom.hasObject("beacon", "node")) {
+        cast(walkFrom.getObject("beacon", "node"), Beacon).walked = true;
+      }
+
+      connectedSpaces(walkFrom.grid.walk(walkFrom, "left")).map(activateSpaceHorz);
+      connectedSpaces(walkFrom.grid.walk(walkFrom, "right")).map(activateSpaceHorz);
+      connectedSpaces(walkFrom.grid.walk(walkFrom, "up")).map(activateSpaceVert);
+      connectedSpaces(walkFrom.grid.walk(walkFrom, "down")).map(activateSpaceVert);
+    }
+
+    for(beacon in beacons) {
+      beacon.updateGraphic();
+    }
+
+    Game.economy.planets = activePlanets.length;
+    Game.economy.goods = 2;
+    Game.economy.sectors = 1;
+    gameMenu.updateGraphic();
   }
 
   public function showSectorExplored():Void

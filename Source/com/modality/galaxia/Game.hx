@@ -12,6 +12,7 @@ class Game
 {
   public static var instance:Game;
   public static var player:Ship;
+  public static var economy:SpaceEconomy;
   public static var log_gfx:Text;
 
   public var turnNumber:Int;
@@ -19,6 +20,7 @@ class Game
   public var inCombat:Bool;
   public var inventory:Array<Item>;
   public var ship:Ship;
+  public var _economy:SpaceEconomy;
   public var _log:Text;
 
   public var currentPower:Power;
@@ -43,8 +45,11 @@ class Game
     });
 
     ship = new Ship();
+    _economy = new SpaceEconomy();
+
     Game.player = ship;
     Game.log_gfx = _log;
+    Game.economy = _economy;
   }
 
   public function setSectorMenu(_sm:SectorMenu):Void
@@ -107,6 +112,7 @@ class Game
 
   public function moveTo(space:Space):Void
   {
+    var sector:Sector = cast(HXP.scene, Sector);
     var grid:Grid<Space> = space.grid;
 
     if(!space.explored && !canExplore(space)) return;
@@ -138,6 +144,7 @@ class Game
           inCombat = true;
           nodes.pop();
         }
+        sector.updateRoutes();
       }
       if(nodes.length > 0) {
         ship.setSpace(grid.get(nodes[nodes.length-1].x, nodes[nodes.length-1].y));
@@ -156,6 +163,7 @@ class Game
           ship.setSpace(space);
           ship.moveOnPath(nodes.slice(0, 1));
         }
+        sector.updateRoutes();
       } else {
         if(space.hasObject("pirate")) {
           var pirates = space.getObjects("pirate");

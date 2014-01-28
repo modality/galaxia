@@ -19,13 +19,11 @@ class Main extends Engine
     var game:Game = new Game();
 
     HXP.stage.align = StageAlign.TOP_LEFT;
-    //HXP.stage.scaleMode = StageScaleMode.NO_SCALE;
     AugTime.setFPS(30);
 #if debug
 		//HXP.console.enable();
 #end
 #if mobile
-    HXP.screen.scale = 2;
     HXP.screen.color = Constants.COLOR_BG;
 #end
     

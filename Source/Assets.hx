@@ -67,6 +67,25 @@ class Assets
   public static var MULTI_SHOT;
   public static var TARGET_SQUARE;
 
+  public static var PROBE;
+  public static var BEACON;
+  public static var BEACON_LINE;
+
+  public static var BEACON_CROSS_4;
+
+  public static var BEACON_UP_3;
+  public static var BEACON_DOWN_3;
+  public static var BEACON_LEFT_3;
+  public static var BEACON_RIGHT_3;
+
+  public static var BEACON_HORZ_2;
+  public static var BEACON_VERT_2;
+
+  public static var BEACON_UP_1;
+  public static var BEACON_DOWN_1;
+  public static var BEACON_LEFT_1;
+  public static var BEACON_RIGHT_1;
+
   public static function init()
   {
     SECTOR_SELECT = "assets/sector_select.png";
@@ -133,6 +152,24 @@ class Assets
     SHIELD_BATTERY = "assets/storm_armor.png";
     MULTI_SHOT = "assets/arcane_torrent.png";
     TARGET_SQUARE = "assets/target_square.png";
-  }
 
+    PROBE = "assets/probe.png";
+    BEACON = "assets/beacon.png";
+    BEACON_LINE = "assets/beacon_line.png";
+
+    BEACON_CROSS_4 = "assets/cross_4.png";
+
+    BEACON_UP_3 = "assets/up_3.png";
+    BEACON_DOWN_3 = "assets/down_3.png";
+    BEACON_LEFT_3 = "assets/left_3.png";
+    BEACON_RIGHT_3 = "assets/right_3.png";
+
+    BEACON_HORZ_2 = "assets/horz_2.png";
+    BEACON_VERT_2 = "assets/vert_2.png";
+
+    BEACON_UP_1 = "assets/up_1.png";
+    BEACON_DOWN_1 = "assets/down_1.png";
+    BEACON_LEFT_1 = "assets/left_1.png";
+    BEACON_RIGHT_1 = "assets/right_1.png";
+  }
 }

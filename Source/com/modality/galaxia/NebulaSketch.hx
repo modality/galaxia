@@ -86,7 +86,6 @@ class NebulaSketch extends Sketch {
     img.perlinNoise(100, 100, 4, floor(random(1000)), false, false, 7, true);
 
     buf.blend(img, BlendMode.Multiply);
-
     colorMode(HSB, 100);
 
     var hue_1:Int = floor(random(100));
