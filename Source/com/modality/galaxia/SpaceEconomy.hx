@@ -10,13 +10,27 @@ class SpaceEconomy
   public var sectors:Int;
   public var planets:Int;
 
-  public function new() {
+  public var money:Int;
+  public var science:Int;
+  public var economy:Int;
+  public var economyLevel:Int;
+  public var nextEconomyCycle:Int;
+
+  public function new()
+  {
     goods = 0;
     planets = 0;
     sectors = 0;
+
+    money = 0;
+    science = 0;
+    economy = 0;
+    economyLevel = 1;
+    nextEconomyCycle = economyLevel * 10;
   }
 
-  public function moneyPerCycle() {
+  public function moneyPerCycle():Int
+  {
     if(goods == 0) return 0;
     if(planets == 0) return 0;
     if(sectors == 0) return 0;
@@ -25,5 +39,22 @@ class SpaceEconomy
     var radius:Float = 1 + (Math.log(goods)/Math.log(SpaceEconomy.GOOD_BASE));
 
     return Math.round(Math.pow(Math.PI, dimensions)*Math.pow(radius, dimensions)/dimensions);
+  }
+
+  public function addScience(howMuch:Int):Void
+  {
+    science += howMuch;
+  }
+
+  public function addEconomy(howMuch:Int):Void
+  {
+    economy += howMuch;
+
+    while(economy >= nextEconomyCycle) {
+      money += moneyPerCycle();
+      economy -= nextEconomyCycle;
+      economyLevel += 1;
+      nextEconomyCycle = economyLevel * 10;
+    }
   }
 }

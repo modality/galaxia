@@ -32,3 +32,48 @@ ASTRONOMER -> scanner
   - show count of pirates
   - show location of pirates
   - show strengths of pirates
+
+
+pirate behaviors
+
+- call buddy
+- powerup!
+  - temp shields
+  - temp attack
+- *cloak* and wait
+
+
+
+galaxy map NO HOLES
+
+outlaw sector
+peaceful sector
+unknown sector
+
+
+stars
+  - science bonuz
+planets
+  - gas giants
+  - land on planets/moons
+  - moons 3x3?
+
+
+--- TODO
+
+remove beacons
+remove money
+remove "economy"
+
+
+add "goods"
+mockup screens
+
+
+
+
+
+science - swords - air
+fuel - staves - fire
+shields - cups - water
+goods - pentacles - earth

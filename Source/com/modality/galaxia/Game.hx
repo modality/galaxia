@@ -137,6 +137,8 @@ class Game
     if(!inCombat) {
       if(canExplore(space)) {
         space.explore();
+        economy.addEconomy(space.economyValue);
+        economy.addScience(space.scienceValue);
         ship.step(true);
         turnTaken = true;
         if(space.encounter != null && space.encounter.encounterType == EncounterType.Pirate) {
@@ -155,6 +157,8 @@ class Game
       turnTaken = true;
       if(canExplore(space)) {
         space.explore();
+        economy.addEconomy(space.economyValue);
+        economy.addScience(space.scienceValue);
         ship.step(true);
         if(space.encounter != null && space.encounter.encounterType == EncounterType.Pirate) {
           log("Your ship is beset by pirates!");

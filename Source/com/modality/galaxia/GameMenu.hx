@@ -12,6 +12,8 @@ class GameMenu extends Base
   public var hull:TextBase;
   public var fuel:TextBase;
   public var economy:TextBase;
+  public var science:TextBase;
+  public var money:TextBase;
   public var galaxyMapBtn:TextBase;
   public var regenShieldBtn:TextBase;
   public var galaxyMap:Bool;
@@ -68,6 +70,16 @@ class GameMenu extends Base
     economy.y = y+40;
     scene.add(economy);
 
+    science = new TextBase("science");
+    science.x = x+12;
+    science.y = y+60;
+    scene.add(science);
+
+    money = new TextBase("money");
+    money.x = x+12;
+    money.y = y+80;
+    scene.add(money);
+
     var powers_y = 240;
     for(power in Game.player.powers) {
       power.x = 0;
@@ -84,6 +96,8 @@ class GameMenu extends Base
     shields.text.text = "Shields: "+Game.player.shields+"/"+Game.player.maxShields;
     hull.text.text = "Hull: "+Game.player.hull+"/"+Game.player.maxHull;
     fuel.text.text = "Fuel: "+Game.player.fuel;
-    economy.text.text = "Money per cycle: "+Game.economy.moneyPerCycle();
+    economy.text.text = "Economy: "+Game.economy.economy+"/"+Game.economy.nextEconomyCycle;
+    science.text.text = "Science: "+Game.economy.science;
+    money.text.text = "Money: "+Game.economy.money;
   }
 }

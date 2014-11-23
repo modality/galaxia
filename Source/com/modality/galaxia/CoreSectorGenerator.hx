@@ -87,6 +87,19 @@ class CoreSectorGenerator extends SectorGenerator
 
   public override function fillSpace(space:Space, what:SpaceHappening):Void
   {
+    switch(space.spaceType) {
+      case SpaceType.Voidness:
+        space.scienceValue = 1;
+        space.economyValue = 1;
+      case SpaceType.Star:
+        space.scienceValue = 3;
+        space.economyValue = 1;
+      case SpaceType.Planet:
+        space.scienceValue = 1;
+        space.economyValue = 3;
+      default:
+    }
+
     switch(what) {
       case Nothing:
         return;

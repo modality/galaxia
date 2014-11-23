@@ -15,7 +15,7 @@ class Space extends Block
   public var item:Item;
   public var description:String;
   public var scienceValue:Int;
-  public var materialsValue:Int;
+  public var economyValue:Int;
 
   public function new(_x:Int = 0, _y:Int = 0)
   {
@@ -24,7 +24,7 @@ class Space extends Block
     layer = Constants.UNEXPLORED_LAYER;
     spaceType = SpaceType.Voidness;
     scienceValue = 0;
-    materialsValue = 0;
+    economyValue = 0;
     locked = false;
   }
 
